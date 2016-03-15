@@ -121,6 +121,12 @@ public class Links implements Iterable<String> {
         return this;
     }
 
+    /**
+     * 提取所有的满足约束的URL
+     * @param doc
+     * @param regexRule
+     * @return
+     */
     public Links addByRegex(Document doc, RegexRule regexRule) {
         Elements as = doc.select("a[href]");
         for (Element a : as) {

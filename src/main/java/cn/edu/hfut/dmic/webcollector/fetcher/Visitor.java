@@ -21,11 +21,16 @@ import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Page;
 
 /**
- *
- * @author hu
+ * 一个观察者
  */
 public interface Visitor {
 
-    public abstract void visit(Page page, CrawlDatums next);
+	/**
+	 * 一个观察者，观察page、CrawlDatums到后做一些处理。
+	 * 
+	 * @param page
+	 * @param next
+	 */
+	public abstract void visit(Page page, CrawlDatums next);
 
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CrawlerConfigs xmlns="http://www.w3school.com.cn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlschema.vfire.cn/crawler-schema crawler-schema.xsd">
+
+	<formatClass id="formatClassId2" value="cn.com.formatClass" />
+
+	<CrawlerConfig id="testjob" threads="1" incThreads="5" minThreads="1" maxThreads="10"
+		topNum="-1" retry="1" maxExecuteCount="-1" isProxy="false">
+
+		<seedUrl value="种子URL">种子URL</seedUrl>
+
+		<threads value="1">1</threads>
+		<incThreads>5</incThreads>
+		<minThreads>1</minThreads>
+		<maxThreads>10</maxThreads>
+		<topNum>-1</topNum>
+		<retry>1</retry>
+		<maxExecuteCount>-1</maxExecuteCount>
+
+		<isProxy>false</isProxy>
+		<proxyIp value="10.0.0.1:8080,10.0.0.2:8080,10.0.0.3:8080">
+			10.0.0.1:8080,
+			10.0.0.2:8080,
+			10.0.0.3:8080
+		</proxyIp>
+		<regexRules>
+			<regex>aaa</regex>
+			<regex>bbb</regex>
+			<regex>ccc</regex>
+		</regexRules>
+		<unregexRules>
+			<regex>aaa</regex>
+			<regex>bbb</regex>
+			<regex>ccc</regex>
+		</unregexRules>
+
+		<dataMode selecter="selecter" id="datamode1" outDataFormat="formatClassId1" outFile="FileClassId1">
+			<Node name="name1" value="123456" />
+			<Node name="data" selecter="selecter2">
+				<Node name="key1" selecter="selecter.selecter2.selecter1" />
+				<Node name="key2" selecter="selecter.selecter2.selecter2" />
+				<Node name="key3" selecter="selecter.selecter2.selecter3" />
+				<Node name="data" selecter="selecter.selecter2.selecter4">
+					<Node name="k1" selecter="selecter.selecter2.selecter3.1" />
+					<Node name="k2" selecter="selecter.selecter2.selecter3.2" />
+					<Node name="k3" selecter="selecter.selecter2.selecter3.3" />
+				</Node>
+			</Node>
+		</dataMode>
+
+		<outData formatClass="cn.com.formatClass" formatClass-ref="formatClassId2" dataMode="datamode1">
+			<dataMode ref="datamode1" />
+			<dataMode ref="datamode2" />
+			<formatClass class="cn.com.formatClass" ref="formatClassId2" />
+			<outFile suffix="${serialNumber}.txt" prefix="">
+				<prefix>suffix</prefix>
+				<suffix>.${serialNumber}.txt</suffix>
+				<path>/${datamode1.name1}/</path>
+				<name>${datamode1.name1.key1}</name>
+			</outFile>
+		</outData>
+
+	</CrawlerConfig>
+
+</CrawlerConfigs>

@@ -20,9 +20,10 @@ package cn.edu.hfut.dmic.webcollector.crawldb;
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
 
 /**
- *
- * @author hu
+ * 对象注入接口
  */
 public interface Injector {
-     public void inject(CrawlDatum datum) throws Exception;
+
+	/** 注入任务对象 */
+	public void inject(CrawlDatum datum) throws Exception;
 }

@@ -22,19 +22,46 @@ import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 
 /**
  * 爬取过程中，写入爬取历史、网页Content、解析信息的Writer
- *
- * @author hu
  */
 public interface SegmentWriter {
 
-    public void initSegmentWriter() throws Exception;
+	/***
+	 * 初始化爬去任务写配置
+	 * 
+	 * @throws Exception
+	 */
+	public void initSegmentWriter() throws Exception;
 
-    public void wrtieFetchSegment(CrawlDatum fetchDatum) throws Exception;
+	/**
+	 * 写入直接取任务
+	 * 
+	 * @param fetchDatum
+	 * @throws Exception
+	 */
+	public void wrtieFetchSegment(CrawlDatum fetchDatum) throws Exception;
 
-    public void writeRedirectSegment(CrawlDatum datum, String realUrl) throws Exception;
+	/**
+	 * 写入需要重定向的任务
+	 * 
+	 * @param datum
+	 * @param realUrl
+	 * @throws Exception
+	 */
+	public void writeRedirectSegment(CrawlDatum datum, String realUrl) throws Exception;
 
-    public void wrtieParseSegment(CrawlDatums parseDatums) throws Exception;
+	/**
+	 * 写入解析后结果的任务集合。
+	 * 
+	 * @param parseDatums
+	 * @throws Exception
+	 */
+	public void wrtieParseSegment(CrawlDatums parseDatums) throws Exception;
 
-    public void closeSegmentWriter() throws Exception;
+	/**
+	 * 关闭写动作。
+	 * 
+	 * @throws Exception
+	 */
+	public void closeSegmentWriter() throws Exception;
 
 }
