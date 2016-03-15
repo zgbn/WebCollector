@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.model;
+package cn.vfire.web.collector.mode;
 
 import cn.edu.hfut.dmic.webcollector.util.RegexRule;
 import java.util.ArrayList;

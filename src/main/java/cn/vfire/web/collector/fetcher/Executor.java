@@ -15,32 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.crawldb;
+package cn.vfire.web.collector.fetcher;
+
+import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
+import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 
 /**
- * 数据库操作锁管理接口
+ * 数据采集工人
+ * 
+ * @author ChenGang
+ *
  */
-public interface DBLock {
+public interface Executor {
 
-	/**
-	 * 获取锁
-	 * 
-	 * @throws Exception
-	 */
-	public void lock() throws Exception;
+	public void execute(CrawlDatum datum, CrawlDatums next) throws Exception;
 
-	/**
-	 * 判断是否被锁
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean isLocked() throws Exception;
-
-	/**
-	 * 解锁
-	 * 
-	 * @throws Exception
-	 */
-	public void unlock() throws Exception;
 }

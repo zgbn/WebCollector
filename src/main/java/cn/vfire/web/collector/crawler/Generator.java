@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 hu
+ * Copyright (C) 2014 hu
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,32 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.crawldb;
+package cn.vfire.web.collector.crawler;
+
+import cn.vfire.web.collector.mode.CrawlDatum;
+
 
 /**
- * 数据库操作锁管理接口
+ * 抓取任务生成器
  */
-public interface DBLock {
+public interface Generator {
 
-	/**
-	 * 获取锁
-	 * 
-	 * @throws Exception
-	 */
-	public void lock() throws Exception;
+	public CrawlDatum next();
 
-	/**
-	 * 判断是否被锁
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean isLocked() throws Exception;
+	public void open() throws Exception;
 
-	/**
-	 * 解锁
-	 * 
-	 * @throws Exception
-	 */
-	public void unlock() throws Exception;
+	public void setTopN(int topN);
+
+	public void setMaxExecuteCount(int maxExecuteCount);
+
+	public int getTotalGenerate();
+
+	public void close() throws Exception;
+
 }

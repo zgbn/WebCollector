@@ -26,39 +26,78 @@ import com.sleepycat.je.DatabaseEntry;
 import java.io.UnsupportedEncodingException;
 
 /**
- *
- * @author hu
+ * BerkeleyDB数据库的工具类
  */
 public class BerkeleyDBUtils {
-    public static DatabaseConfig defaultDBConfig;
-    
-    static{
-        defaultDBConfig=createDefaultDBConfig();
-    }
-    public static DatabaseConfig  createDefaultDBConfig(){
-        DatabaseConfig databaseConfig=new DatabaseConfig();
-        databaseConfig.setAllowCreate(true);
-        databaseConfig.setDeferredWrite(true);
-        return databaseConfig;
-    }
-    
-    public static void writeDatum(Database database,CrawlDatum datum) throws Exception{
-        String key=datum.getKey();
-        String value=CrawlDatumFormater.datumToJsonStr(datum);
-        put(database,key,value);
-    }
-    
-    public static void put(Database database,String key,String value) throws Exception{
-        database.put(null, strToEntry(key), strToEntry(value));
-    }
-    
-    public static DatabaseEntry strToEntry(String str) throws UnsupportedEncodingException{
-        return new DatabaseEntry(str.getBytes("utf-8"));
-    }
-    
-     public static CrawlDatum createCrawlDatum(DatabaseEntry key,DatabaseEntry value) throws Exception{
-        String datumKey=new String(key.getData(),"utf-8");
-        String valueStr=new String(value.getData(),"utf-8");
-        return CrawlDatumFormater.jsonStrToDatum(datumKey, valueStr);
-    }
+
+	/** BerkeleyDB数据库的默认配置信息 */
+	public static DatabaseConfig defaultDBConfig;
+
+	static {
+		defaultDBConfig = createDefaultDBConfig();
+	}
+
+	/**
+	 * 构造默认配置信息。
+	 * 
+	 * @return
+	 */
+	public static DatabaseConfig createDefaultDBConfig() {
+		DatabaseConfig databaseConfig = new DatabaseConfig();
+		// 如果数据库不存在则创建一个新的数据库
+		databaseConfig.setAllowCreate(true);
+		// 开启数据库延迟写入机制
+		databaseConfig.setDeferredWrite(true);
+		return databaseConfig;
+	}
+
+	/**
+	 * 写数据，保存数据
+	 * 
+	 * @param database
+	 * @param datum
+	 * @throws Exception
+	 */
+	public static void writeDatum(Database database, CrawlDatum datum) throws Exception {
+		String key = datum.getKey();
+		String value = CrawlDatumFormater.datumToJsonStr(datum);
+		put(database, key, value);
+	}
+
+	/**
+	 * 写数据，数据形式为k=v方式。
+	 * 
+	 * @param database
+	 * @param key
+	 * @param value
+	 * @throws Exception
+	 */
+	public static void put(Database database, String key, String value) throws Exception {
+		database.put(null, strToEntry(key), strToEntry(value));
+	}
+
+	/**
+	 * 将str对象处理成数据库识别的字节实体，并通过UTF-8编码。
+	 * 
+	 * @param str
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	public static DatabaseEntry strToEntry(String str) throws UnsupportedEncodingException {
+		return new DatabaseEntry(str.getBytes("utf-8"));
+	}
+
+	/**
+	 * 创建任务对象
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 * @throws Exception
+	 */
+	public static CrawlDatum createCrawlDatum(DatabaseEntry key, DatabaseEntry value) throws Exception {
+		String datumKey = new String(key.getData(), "utf-8");
+		String valueStr = new String(value.getData(), "utf-8");
+		return CrawlDatumFormater.jsonStrToDatum(datumKey, valueStr);
+	}
 }

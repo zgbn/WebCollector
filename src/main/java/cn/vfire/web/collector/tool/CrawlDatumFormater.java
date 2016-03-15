@@ -15,9 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.util;
-
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
+package cn.vfire.web.collector.tool;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +24,8 @@ import java.util.Map.Entry;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import cn.vfire.web.collector.mode.CrawlDatum;
 
 /**
  * 抓去任务的格式化

@@ -199,32 +199,6 @@ public class BiqugeCrawler extends BreadthCrawler {
 		// String content = page.select("div#artibody", 0).text();
 	}
 
-
-	@Override
-	protected void exceptionLink(CrawlDatum datum, CrawlDatums next, Exception e) throws Exception {
-
-		String url = datum.getUrl();
-
-		final int num = 5;
-
-		if (e instanceof SocketTimeoutException) {
-			if (this.excptionCounts.containsKey(url)) {
-
-				Integer c = (c = this.excptionCounts.get(url)) == null ? 0 : c;
-
-				if (c < num) {
-					this.excptionCounts.put(url, c + 1);
-					next.add(url);
-				} else {
-					throw new Exception("该页面尝试" + num + "此采集无效，均发生异常。URL -> " + url, e);
-				}
-			}
-		} else {
-			throw e;
-		}
-	}
-
-
 	private void writeFile(String filePath, String fileName, String data) {
 
 		String file = fileName.replaceAll("[\\\\/:*?\"<>|]+", "");
@@ -265,11 +239,11 @@ public class BiqugeCrawler extends BreadthCrawler {
 
 	public static void main(String[] args) throws Exception {
 		BiqugeCrawler crawler = new BiqugeCrawler("crawl", true);
-		crawler.setThreads(500);
+		crawler.setThreads(10);
 		// crawler.setTopN(5);
 		crawler.setResumable(false);
 		/* start crawl with depth of 4 */
-		crawler.start(3);
+		crawler.start(1);
 	}
 
 }

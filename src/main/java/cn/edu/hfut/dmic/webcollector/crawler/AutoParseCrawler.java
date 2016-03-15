@@ -43,11 +43,24 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 	 */
 	protected boolean autoParse = true;
 
+	/**
+	 * 声明一个观察者。
+	 */
 	protected Visitor visitor;
 
+	/** 声明一个真正的任务执行者。 */
 	protected Requester requester;
 
+	/**
+	 * URL正则约束集合
+	 */
+	protected RegexRule regexRule = new RegexRule();
 
+	/**
+	 * 构造器。
+	 * 
+	 * @param autoParse
+	 */
 	public AutoParseCrawler(boolean autoParse) {
 		this.autoParse = autoParse;
 		this.visitor = this;
@@ -55,52 +68,8 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 		this.executor = this;
 	}
 
-
-	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception {
-		HttpRequest request = new HttpRequest(crawlDatum);
-		return request.getResponse();
-	}
-
-
 	/**
-	 * URL正则约束
-	 */
-	protected RegexRule regexRule = new RegexRule();
-
-
-	public void execute(CrawlDatum datum, CrawlDatums next) throws Exception {
-		try {
-			HttpResponse response = requester.getResponse(datum);
-			Page page = new Page(datum, response);
-			visitor.visit(page, next);
-			if (autoParse && !regexRule.isEmpty()) {
-				parseLink(page, next);
-			}
-		} catch (Exception e) {
-			this.exceptionLink(datum, next, e);
-		}
-	}
-
-
-	protected void parseLink(Page page, CrawlDatums next) {
-		String conteType = page.getResponse().getContentType();
-		if (conteType != null && conteType.contains("text/html")) {
-			Document doc = page.doc();
-			if (doc != null) {
-				Links links = new Links().addByRegex(doc, regexRule);
-				next.add(links);
-			}
-		}
-	}
-
-
-	protected void exceptionLink(CrawlDatum datum, CrawlDatums next, Exception e) throws Exception {
-		throw e;
-	}
-
-
-	/**
-	 * 添加URL正则约束
+	 * 添加URL正则约束，用于提取URL
 	 *
 	 * @param urlRegex
 	 */
@@ -108,6 +77,42 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 		regexRule.addRule(urlRegex);
 	}
 
+	/**
+	 * 任务执行调度方法
+	 */
+	public void execute(CrawlDatum datum, CrawlDatums next) throws Exception {
+		HttpResponse response = requester.getResponse(datum);
+		Page page = new Page(datum, response);
+		visitor.visit(page, next);
+		if (autoParse && !regexRule.isEmpty()) {
+			// 自动分析当前子页面的所有URL连接
+			parseLink(page, next);
+		}
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public RegexRule getRegexRule() {
+		return regexRule;
+	}
+
+	public Requester getRequester() {
+		return requester;
+	}
+
+	/**
+	 * 对真正任务执行者的具体实现。
+	 */
+	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception {
+		HttpRequest request = new HttpRequest(crawlDatum);
+		return request.getResponse();
+	}
+
+	public Visitor getVisitor() {
+		return visitor;
+	}
 
 	/**
 	 *
@@ -117,6 +122,24 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 		return autoParse;
 	}
 
+	/**
+	 * 分析当前任务结果，从结果中提取新的任务
+	 * 
+	 * @param page
+	 * @param next
+	 */
+	protected void parseLink(Page page, CrawlDatums next) {
+		String conteType = page.getResponse().getContentType();
+		if (conteType != null && conteType.contains("text/html")) {
+			Document doc = page.doc();
+			if (doc != null) {
+				// 提取所有的满足约束的URL
+				Links links = new Links().addByRegex(doc, regexRule);
+				// 添加到此任务的下一个任务处理。
+				next.add(links);
+			}
+		}
+	}
 
 	/**
 	 * 设置是否自动抽取符合正则的链接并加入后续任务
@@ -127,16 +150,6 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 		this.autoParse = autoParse;
 	}
 
-
-	/**
-	 *
-	 * @return
-	 */
-	public RegexRule getRegexRule() {
-		return regexRule;
-	}
-
-
 	/**
 	 *
 	 * @param regexRule
@@ -145,23 +158,11 @@ public abstract class AutoParseCrawler extends Crawler implements Executor, Visi
 		this.regexRule = regexRule;
 	}
 
-
-	public Visitor getVisitor() {
-		return visitor;
+	public void setRequester(Requester requester) {
+		this.requester = requester;
 	}
-
 
 	public void setVisitor(Visitor visitor) {
 		this.visitor = visitor;
-	}
-
-
-	public Requester getRequester() {
-		return requester;
-	}
-
-
-	public void setRequester(Requester requester) {
-		this.requester = requester;
 	}
 }

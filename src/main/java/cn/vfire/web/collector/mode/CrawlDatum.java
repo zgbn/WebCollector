@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.model;
+package cn.vfire.web.collector.mode;
 
-import cn.edu.hfut.dmic.webcollector.util.CrawlDatumFormater;
 
 import java.io.Serializable;
 import java.util.HashMap;
+
+import cn.vfire.web.collector.tool.CrawlDatumFormater;
 
 /**
  * 爬取任务的数据结构

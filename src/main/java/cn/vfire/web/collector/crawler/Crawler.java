@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 hu
+ * Copyright (C) 2014 hu
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,32 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.crawldb;
+package cn.vfire.web.collector.crawler;
 
 /**
- * 数据库操作锁管理接口
+ * 爬虫
+ * 
+ * @author ChenGang
  */
-public interface DBLock {
+public interface Crawler {
 
-	/**
-	 * 获取锁
-	 * 
-	 * @throws Exception
-	 */
-	public void lock() throws Exception;
-
-	/**
-	 * 判断是否被锁
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean isLocked() throws Exception;
-
-	/**
-	 * 解锁
-	 * 
-	 * @throws Exception
-	 */
-	public void unlock() throws Exception;
 }

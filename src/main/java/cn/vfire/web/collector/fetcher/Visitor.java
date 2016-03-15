@@ -15,32 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.edu.hfut.dmic.webcollector.crawldb;
+package cn.vfire.web.collector.fetcher;
+
+import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
+import cn.edu.hfut.dmic.webcollector.model.Page;
 
 /**
- * 数据库操作锁管理接口
+ * 对数据采集者的监督人员
  */
-public interface DBLock {
+public interface Visitor {
 
 	/**
-	 * 获取锁
+	 * 一个观察者，观察page、CrawlDatums到后做一些处理。
 	 * 
-	 * @throws Exception
+	 * @param page
+	 * @param next
 	 */
-	public void lock() throws Exception;
+	public abstract void visit(Page page, CrawlDatums next);
 
-	/**
-	 * 判断是否被锁
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean isLocked() throws Exception;
-
-	/**
-	 * 解锁
-	 * 
-	 * @throws Exception
-	 */
-	public void unlock() throws Exception;
 }
