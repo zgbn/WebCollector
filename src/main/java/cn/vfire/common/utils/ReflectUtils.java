@@ -40,6 +40,31 @@ public class ReflectUtils {
 
 	private final static Logger log = LoggerFactory.getLogger(ReflectUtils.class);
 
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(String className, Class<T> clz) {
+
+		if (className == null || clz == null) {
+			return null;
+		}
+
+		try {
+
+			Object obj = Class.forName(className).newInstance();
+
+			boolean flag = clz.isAssignableFrom(obj.getClass());
+
+			if (flag) {
+				return (T) obj;
+			} else {
+				return null;
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("反射创建对象发生异常。异常信息:" + e.getMessage(), e);
+		}
+
+	}
+
 	/**
 	 * 反射得到Class的属性，包括父类的所有属性。
 	 * 
@@ -244,6 +269,22 @@ public class ReflectUtils {
 
 	}
 
+	public static boolean isBaseType(Class<?> clz, String fieldName) {
+		Field f = getField(clz, fieldName);
+		if (f != null) {
+			return isBaseType(f.getType());
+		}
+		return false;
+	}
+
+	public static boolean isCollectionType(Class<?> clz, String fieldName) {
+		Field f = getField(clz, fieldName);
+		if (f != null) {
+			return isCollectionType(f.getType());
+		}
+		return false;
+	}
+
 	/**
 	 * 判断是否为基础类型。 <br/>
 	 * 注意：int、Integer同为基础类型
@@ -372,6 +413,10 @@ public class ReflectUtils {
 		}
 
 		Field f = getField(obj.getClass(), fieldName);
+
+		if (fvalue instanceof String) {
+			fvalue = valueOfBaseType(f, (String) fvalue);
+		}
 
 		boolean rs = setFieldValueBySetter(obj, f, fvalue);
 
