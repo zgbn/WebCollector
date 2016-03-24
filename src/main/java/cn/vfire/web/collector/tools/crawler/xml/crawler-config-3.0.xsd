@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlschema.vfire.cn/xsd/crawlerconfigs" xmlns:tns="http://xmlschema.vfire.cn/xsd/crawlerconfigs"
+	elementFormDefault="qualified">
+
+	<xs:element name="crawlerconfigs">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				数据爬虫的执行任务配置，包含元素crawlerconfig、outdata、formatclass、outfile。
+				其中crawlerconfig、outdata为必须存在的元素。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:formatclass" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tns:proxyip" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="tns:outfile" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tns:outdata" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="tns:crawlerconfig" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="formatclass">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				爬虫抓取到数据格式化处理，爬虫默认从网页中提取到的数据封装到
+				cn.vfire.web.collector.tools.crawlerconfigxml.format.NodeData
+				对象中，并通过该元素描述的class、ref的Bean方法的入参暴露出来，注意class、ref
+				必须是cn.vfire.web.collector.tools.crawlerconfigxml.format.FormatData接口
+				的实现类。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:ID" use="required">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+							ID全局唯一。
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="class" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+							类的完整名称，并该类必须是对接口cn.vfire.web.collector.tools.crawlerconfigxml.format.FormatData
+							的实现。
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="ref" type="xs:IDREF">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+							通过ID的引用其他的类对象。
+							被引用对象的类必须是对接口cn.vfire.web.collector.tools.crawlerconfigxml.format.FormatData
+							的实现。
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="crawlerconfig">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				爬虫执行任务的配置元素，每一个节点的描述都是爬虫的一个执行任务体。	
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="tns:simpleContent">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							爬虫任务的名字，用于描述显示。
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="description" type="tns:simpleContent">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							爬虫任务的业务描述。
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="seedurl" type="tns:simpleContent">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							爬虫任务种子URL，通常一个种子URL为一个任务。
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="tns:regexrules" />
+				<xs:element ref="tns:unregexrules" />
+				<xs:element ref="tns:datamode" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID" use="required">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+						ID全局唯一。
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attributeGroup ref="tns:crawlerconfig_group" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="proxyip">
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫是否使用代理服务器IP，isproxy=true使用代理服务IP，默认为不使用。
+					爬虫会为每一次的请求随机选择一个有效的代理IP去发起访问。
+					当为isproxy=true时，若不存在代理IP，或者代理IP全部无效的时，爬虫任务挂起并爆出异常警告信息。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="ip" minOccurs="0" maxOccurs="unbounded">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="(\d{1,3}\.){3}\d{1,3}(\:\d*)?" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="regexrules">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				提取URL的规则，爬虫在抓去页面的信息时，会将满足此规则的URL提取到下一次抓去页面URL池中。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="regex" type="tns:simpleContent" minOccurs="0"
+					maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							JAVA正则表达式
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="unregexrules">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				过滤URL的规则，爬虫在抓去页面的信息时，会将满足此规则的URL过滤掉，不会放到抓去URL池中，该节点会在regexrules节点执行之后进行过滤。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="regex" type="tns:simpleContent" minOccurs="0"
+					maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							JAVA正则表达式
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="urls">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				与抓取完成URL页面的URL进行匹配的正则，匹配到后则根据datamode节点数据模型提取算法提取该URL页面的数据。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="regex" type="tns:simpleContent" minOccurs="0"
+					maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							<![CDATA[
+							JAVA正则表达式
+							]]>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="datamode">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				提取数据模型算法。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:urls" />
+				<xs:element name="outdata">
+					<xs:complexType>
+						<xs:attribute name="ref" type="xs:IDREF" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="tns:node" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tns:list" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+							ID全局唯一
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="selecter" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+							对抓取后的HTML的页面，通过CSS检索语法定位提取的元数据节点。该CSS检索语法为相对选择器。
+							例如：
+							<div>
+								<title>title</title>
+								<div class="divcls">
+									<span>value-1</span>
+								<div>
+								<div>
+									<input value="2015-02-21" />
+								<div>
+							</div>
+							----------------------------------
+							<datamode selecter="div">
+								<node key="title" selecter="title" />
+								<node key="info" selecter="div.divcls > span" />
+								<node key="date" selecter="div > input(value)" />
+							</datamode>
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="node">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				数据节点，元数据的提取算法在此描述，层级node节点用来描述提取后数据的结构化模型。
+				node映射为对象或者Map
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:node" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tns:list" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attributeGroup ref="tns:node_group" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="list">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+				数据节点，元数据的提取算法在此描述，层级node节点用来描述提取后数据的结构化模型。
+				list映射为数组或者List。
+				list元素下级节点如果是node，则忽略node元素的key属性。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tns:node" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tns:list" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attributeGroup ref="tns:node_group" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="outdata">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+					提取后的数据输出方式描述。目前只提供的输出文件的方式。
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="formatclass">
+					<xs:complexType>
+						<xs:attribute name="ref" type="xs:IDREF" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="outfile">
+					<xs:complexType>
+						<xs:attribute name="ref" type="xs:IDREF" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="outfile">
+		<xs:annotation>
+			<xs:documentation>
+				<![CDATA[
+					输入文件的描述
+				]]>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:group ref="tns:outfile_group" />
+			<xs:attribute name="id" type="xs:ID" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="simpleContent">
+		<xs:simpleContent>
+			<xs:extension base="xs:string" />
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:group name="outfile_group">
+		<xs:sequence>
+			<xs:element name="prefix" type="xs:string" maxOccurs="1"
+				minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						作用于同级元素name上，对name追加前缀。并提供一个自增的需要变量，通过${sn}获取此变量，
+						自增的作用于只针对当前crawlerconfig任务。
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="suffix" type="xs:string" maxOccurs="1"
+				minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						作用于同级元素name上，对name追加后缀。并提供一个自增的需要变量，通过${sn}获取此变量，
+						自增的作用于只针对当前crawlerconfig任务。
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="name" type="xs:string" maxOccurs="1" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+						输出文件的文件名。
+						支持动态文件名定义描述，通过${datamode.node[name].node[name]...node[name]}方式遍历datamode数据模型获取动态数据。
+						例如：
+						<datamode><node key="user"><node key="age" value="1" /></node></datamode>
+						---------------------------------------
+						${datamode.user[0].age} == 1
+						${datamode.user.age} == 1
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="path" type="xs:string" maxOccurs="1" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+						输出文件的文件名。
+						支持动态文件名定义描述，通过${datamode.node[name].node[name]...node[name]}方式遍历datamode数据模型获取动态数据。
+						例如：
+						<datamode><node key="user"><node key="age" value="1" /></node></datamode>
+						---------------------------------------
+						${datamode.user[0].age} == 1
+						${datamode.user.age} == 1
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+
+	<xs:attributeGroup name="crawlerconfig_group">
+		<xs:attribute name="depth" type="xs:integer" default="1">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫爬取页面的深度，默认为1，即只爬去种子页面。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="threads" type="xs:integer" default="5">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫执行时的默认并发线程数。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="incthreads" type="xs:integer" default="5">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫执行时的测试最佳线程数的递增数。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minthreads" type="xs:integer" default="5">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫执行时的最小线程数，当给定默认线程数不是最优的，爬虫测试后的最佳线程数小于默认线程数时，最小线程数。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxthreads" type="xs:integer" default="50">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫执行时的最大线程数，当给定默认线程数不是最优的，爬虫测试时最大线程数。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="topnum" type="xs:integer" default="-1">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					规定了爬虫在提取页面URL时候的个数，从上到下提取。如果为-1则提取当前页面所有的URL。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="retry" type="xs:integer" default="1">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					规定的当爬虫访问URL失败时候，在当前线程中重新访问的次数。每一次访问会默认随机暂停3-9秒钟。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxexecutecount" type="xs:integer" default="5">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					规定的当爬虫访问URL失败时候，爬虫会将该URL放回抓去URL任务池中的次数，也就规定爬虫对该URL重复抓取次数，非当前线程。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isproxy" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					爬虫是否使用代理服务器IP，true使用代理服务IP，默认为不使用。
+					爬虫会为每一次的请求随机选择一个有效的代理IP去发起访问。
+					当为true时，若不存在代理IP，或者代理IP全部无效的时，爬虫任务挂起并爆出异常警告信息。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:attributeGroup name="node_group">
+		<xs:attribute name="key" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					node节点提取元数据后的映射key。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="selecter" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					node节点提取元数据方式，通过html的css选择器selecter方式。详细参见datamode.selecter描述。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					<![CDATA[
+					字符串数组，中间用“,”分割。
+					]]>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+</xs:schema>
