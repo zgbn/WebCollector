@@ -30,6 +30,10 @@ public class NNode extends Element<NNode> {
 
 	@Getter
 	@Expose
+	private String label;
+
+	@Getter
+	@Expose
 	private List<NNode> node = new ArrayList<NNode>();
 
 	@Getter
@@ -74,6 +78,9 @@ public class NNode extends Element<NNode> {
 		}
 		if (SELECTER.equals(fname)) {
 			this.selecter = fvalue;
+		}
+		if (LABEL.equals(fname)) {
+			this.label = fvalue;
 		}
 	}
 

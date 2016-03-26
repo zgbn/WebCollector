@@ -17,7 +17,6 @@
  */
 package cn.vfire.web.collector.net;
 
-import cn.edu.hfut.dmic.webcollector.util.CharsetDetector;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.LoggerFactory;
 
+import cn.vfire.web.collector.util.CharsetDetector;
+
+/**
+ *
+ * @author hu
+ */
 public class HttpResponse {
 
     public static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HttpResponse.class);

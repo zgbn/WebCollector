@@ -15,22 +15,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.vfire.web.collector.net;
-
-import cn.vfire.web.collector.model.CrawlDatum;
+package cn.vfire.web.collector.crawldb;
 
 /**
- * 真正的任务执行者。
+ * 数据库操作锁管理接口
  */
-public interface Requester {
+public interface DBLock {
 
 	/**
-	 * 真正的任务执行
+	 * 获取锁
 	 * 
-	 * @param crawlDatum
+	 * @throws Exception
+	 */
+	public void lock() throws Exception;
+
+	/**
+	 * 判断是否被锁
+	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception;
+	public boolean isLocked() throws Exception;
 
+	/**
+	 * 解锁
+	 * 
+	 * @throws Exception
+	 */
+	public void unlock() throws Exception;
 }

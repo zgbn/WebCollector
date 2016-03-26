@@ -25,6 +25,10 @@ public class NList extends Element<NList> {
 
 	@Getter
 	@Expose
+	private String label;
+
+	@Getter
+	@Expose
 	private List<NNode> node = new ArrayList<NNode>();
 
 
@@ -58,6 +62,9 @@ public class NList extends Element<NList> {
 		}
 		else if (SELECTER.equals(fname)) {
 			this.selecter = fvalue;
+		}
+		else if (LABEL.equals(fname)) {
+			this.label = fvalue;
 		}
 	}
 

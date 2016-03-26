@@ -15,22 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.vfire.web.collector.net;
+package cn.vfire.web.collector.plugin.ram;
+
+
+import java.util.concurrent.ConcurrentHashMap;
 
 import cn.vfire.web.collector.model.CrawlDatum;
 
+
 /**
- * 真正的任务执行者。
+ *
+ * @author hu
  */
-public interface Requester {
-
-	/**
-	 * 真正的任务执行
-	 * 
-	 * @param crawlDatum
-	 * @return
-	 * @throws Exception
-	 */
-	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception;
-
+public class RamDB {
+    
+    protected ConcurrentHashMap<String, CrawlDatum> crawlDB = new ConcurrentHashMap<String, CrawlDatum>();
+    protected ConcurrentHashMap<String, CrawlDatum> fetchDB = new ConcurrentHashMap<String, CrawlDatum>();
+    protected ConcurrentHashMap<String, CrawlDatum> linkDB = new ConcurrentHashMap<String, CrawlDatum>();
+    protected ConcurrentHashMap<String, String> redirectDB = new ConcurrentHashMap<String, String>();
 }

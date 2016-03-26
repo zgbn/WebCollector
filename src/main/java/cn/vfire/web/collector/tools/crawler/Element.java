@@ -40,6 +40,8 @@ public abstract class Element<T extends Element<?>> implements ElementInfo, Seri
 
 	protected static final String ID = "id";
 
+	protected static final String ZIP = "zip";
+
 	protected static final String DEPTH = "depth";
 
 	protected static final String INCTHREADS = "incthreads";
@@ -69,6 +71,8 @@ public abstract class Element<T extends Element<?>> implements ElementInfo, Seri
 	protected static final String VALUE = "value";
 
 	protected static final String SELECTER = "selecter";
+	
+	protected static final String LABEL = "label";
 
 	protected static final String CLASS = "class";
 

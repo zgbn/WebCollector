@@ -14,7 +14,7 @@
 	</proxyip>
 
 	<!-- 0个 多个 -->
-	<outfile id="outfile">
+	<outfile id="outfile" zip="Gzip">
 		<prefix>suffix</prefix>
 		<suffix>.${sn}.txt</suffix>
 		<name>${selecter.selecter2.selecter1}</name>
@@ -66,19 +66,19 @@
 			</node>
 		</datamode>
 
-		<datamode id="datamode2" selecter="selecter">
+		<datamode id="datamode2" selecter="selecter" label="小说">
 			<urls>
 				<regex>aaa2</regex>
 				<regex>bbb2</regex>
 				<regex>ccc2</regex>
 			</urls>
 			<outdata ref="outdataid" />
-			<node key="name1" value="123456" />
-			<node key="data" selecter="selecter2">
-				<node key="key1" selecter="selecter.selecter2.selecter1"></node>
-				<node key="key2" selecter="selecter.selecter2.selecter2"></node>
-				<node key="key3" selecter="selecter.selecter2.selecter3"></node>
-				<list key="data" selecter="selecter.selecter2.selecter4">
+			<node key="name1" value="123456" label="标题" />
+			<node key="data" selecter="selecter2" label="章节">
+				<node key="key1" selecter="selecter.selecter2.selecter1" label="A"></node>
+				<node key="key2" selecter="selecter.selecter2.selecter2" label="B"></node>
+				<node key="key3" selecter="selecter.selecter2.selecter3" label="C"></node>
+				<list key="data" selecter="selecter.selecter2.selecter4" label="D">
 					<node selecter="selecter.selecter2.selecter3.1"></node>
 					<node selecter="selecter.selecter2.selecter3.2"></node>
 					<node selecter="selecter.selecter2.selecter3.3"></node>

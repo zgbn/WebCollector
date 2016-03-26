@@ -15,22 +15,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.vfire.web.collector.net;
+package cn.vfire.web.collector.plugin.ram;
 
-import cn.vfire.web.collector.model.CrawlDatum;
+import cn.vfire.web.collector.crawler.AutoParseCrawler;
 
 /**
- * 真正的任务执行者。
+ * 基于内存的Crawler插件，适合一次性爬取，并不具有断点爬取功能
+ * 长期任务请使用BreadthCrawler
+ * 
+ * @author hu
  */
-public interface Requester {
+public abstract class RamCrawler extends AutoParseCrawler {
+    
+    public RamCrawler(){
+        this(true);
+    }
 
-	/**
-	 * 真正的任务执行
-	 * 
-	 * @param crawlDatum
-	 * @return
-	 * @throws Exception
-	 */
-	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception;
+    public RamCrawler(boolean autoParse) {
+        super(autoParse);
+        RamDB ramDB = new RamDB();
+        this.dbManager = new RamDBManager(ramDB);
+    }
+    
+    public void start() throws Exception{
+        start(Integer.MAX_VALUE);
+    }
 
 }

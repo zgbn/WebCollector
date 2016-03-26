@@ -2,7 +2,6 @@ package cn.vfire.demo.webcrawler;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,16 +15,16 @@ import org.jsoup.select.Elements;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
-import cn.edu.hfut.dmic.webcollector.model.Page;
-import cn.edu.hfut.dmic.webcollector.net.HttpRequest;
-import cn.edu.hfut.dmic.webcollector.net.HttpResponse;
-import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
 import cn.vfire.demo.app.biquge.ChapterMode;
 import cn.vfire.demo.app.biquge.NodeMode;
 import cn.vfire.demo.app.biquge.NovelListMode;
 import cn.vfire.demo.app.biquge.NovelMode;
+import cn.vfire.web.collector.model.CrawlDatum;
+import cn.vfire.web.collector.model.CrawlDatums;
+import cn.vfire.web.collector.model.Page;
+import cn.vfire.web.collector.net.HttpRequest;
+import cn.vfire.web.collector.net.HttpResponse;
+import cn.vfire.web.collector.plugin.berkeley.BreadthCrawler;
 
 /**
  * Crawling news from hfut news

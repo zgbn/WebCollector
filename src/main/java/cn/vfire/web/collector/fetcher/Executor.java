@@ -17,17 +17,9 @@
  */
 package cn.vfire.web.collector.fetcher;
 
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
+import cn.vfire.web.collector.model.CrawlDatum;
+import cn.vfire.web.collector.model.CrawlDatums;
 
-/**
- * 数据采集工人
- * 
- * @author ChenGang
- *
- */
 public interface Executor {
-
-	public void execute(CrawlDatum datum, CrawlDatums next) throws Exception;
-
+    public void execute(CrawlDatum datum,CrawlDatums next) throws Exception;
 }

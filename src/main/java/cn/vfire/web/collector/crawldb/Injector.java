@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 hu
+ * Copyright (C) 2014 hu
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,22 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package cn.vfire.web.collector.net;
+package cn.vfire.web.collector.crawldb;
 
 import cn.vfire.web.collector.model.CrawlDatum;
 
 /**
- * 真正的任务执行者。
+ * 对象注入接口
  */
-public interface Requester {
+public interface Injector {
 
-	/**
-	 * 真正的任务执行
-	 * 
-	 * @param crawlDatum
-	 * @return
-	 * @throws Exception
-	 */
-	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception;
-
+	/** 注入任务对象 */
+	public void inject(CrawlDatum datum) throws Exception;
 }

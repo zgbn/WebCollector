@@ -17,8 +17,6 @@
  */
 package cn.vfire.web.collector.net;
 
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
-import cn.edu.hfut.dmic.webcollector.util.Config;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,6 +35,13 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.vfire.web.collector.model.CrawlDatum;
+import cn.vfire.web.collector.util.Config;
+
+/**
+ *
+ * @author hu
+ */
 public class HttpRequest {
 
     public static final Logger LOG = LoggerFactory.getLogger(HttpRequest.class);

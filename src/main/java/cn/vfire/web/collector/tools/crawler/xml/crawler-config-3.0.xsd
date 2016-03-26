@@ -272,6 +272,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="label" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -290,6 +291,7 @@
 				<xs:element ref="tns:list" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			<xs:attributeGroup ref="tns:node_group" />
+			<xs:attribute name="label" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -309,6 +311,7 @@
 				<xs:element ref="tns:list" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			<xs:attributeGroup ref="tns:node_group" />
+			<xs:attribute name="label" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 
@@ -348,6 +351,22 @@
 		<xs:complexType>
 			<xs:group ref="tns:outfile_group" />
 			<xs:attribute name="id" type="xs:ID" use="required" />
+			<xs:attribute name="zip" >
+				<xs:annotation>
+					<xs:documentation>
+						<![CDATA[
+						zip属性描述输出文件是否自动压缩，并通过属性值指定压缩方式。
+						Gzip|Zip
+						]]>
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Gzip"/>
+						<xs:enumeration value="Zip"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 

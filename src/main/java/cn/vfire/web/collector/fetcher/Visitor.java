@@ -17,11 +17,11 @@
  */
 package cn.vfire.web.collector.fetcher;
 
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
-import cn.edu.hfut.dmic.webcollector.model.Page;
+import cn.vfire.web.collector.model.CrawlDatums;
+import cn.vfire.web.collector.model.Page;
 
 /**
- * 对数据采集者的监督人员
+ * 一个观察者
  */
 public interface Visitor {
 

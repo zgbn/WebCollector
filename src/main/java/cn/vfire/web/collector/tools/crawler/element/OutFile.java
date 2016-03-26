@@ -39,6 +39,10 @@ public class OutFile extends Element<OutFile> {
 	@Getter
 	private String path;
 
+	@Expose
+	@Getter
+	private String zip;
+
 
 	@Override
 	public String[] childNames() {
@@ -48,7 +52,7 @@ public class OutFile extends Element<OutFile> {
 
 	@Override
 	public String[] attributes() {
-		return new String[] { "id" };
+		return new String[] { "id", "zip" };
 	}
 
 
@@ -64,7 +68,7 @@ public class OutFile extends Element<OutFile> {
 			this.name = childNode.getTextContent();
 		}
 		if (PATH.equals(fname)) {
-			childNode = this.valiChildNode(fname, childNode) ;
+			childNode = this.valiChildNode(fname, childNode);
 			this.path = childNode.getTextContent();
 		}
 	}
@@ -76,8 +80,11 @@ public class OutFile extends Element<OutFile> {
 			fvalue = this.valiAttrNode(fname, fvalue);
 			this.id = fvalue;
 		}
+		if (ZIP.equals(fname)) {
+			if ("Gzip".equalsIgnoreCase(fvalue) || "Zip".equalsIgnoreCase(fvalue)) {
+				this.zip = fvalue;
+			}
+		}
 	}
-
-
 
 }

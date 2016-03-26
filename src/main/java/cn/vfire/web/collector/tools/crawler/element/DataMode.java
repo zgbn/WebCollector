@@ -22,6 +22,10 @@ public class DataMode extends Element<DataMode> {
 	@Getter
 	@Expose
 	private String selecter;
+	
+	@Getter
+	@Expose
+	private String label;
 
 	@Getter
 	@Expose
@@ -48,7 +52,7 @@ public class DataMode extends Element<DataMode> {
 
 	@Override
 	public String[] attributes() {
-		return new String[] { "id", "selecter" };
+		return new String[] { "id", "selecter","label" };
 	}
 
 
@@ -85,6 +89,9 @@ public class DataMode extends Element<DataMode> {
 		}
 		if (SELECTER.equals(fname)) {
 			this.selecter = fvalue;
+		}
+		if (LABEL.equals(fname)) {
+			this.label = fvalue;
 		}
 	}
 
