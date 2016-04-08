@@ -22,7 +22,7 @@ public class DataMode extends Element<DataMode> {
 	@Getter
 	@Expose
 	private String selecter;
-	
+
 	@Getter
 	@Expose
 	private String label;
@@ -31,6 +31,9 @@ public class DataMode extends Element<DataMode> {
 	@Expose
 	private Urls urls;
 
+	/**
+	 * Crawler任务配置Datamode.Outdata描述
+	 */
 	@Getter
 	@Expose
 	private OutData outdata;
@@ -52,7 +55,7 @@ public class DataMode extends Element<DataMode> {
 
 	@Override
 	public String[] attributes() {
-		return new String[] { "id", "selecter","label" };
+		return new String[] { "id", "selecter", "label" };
 	}
 
 

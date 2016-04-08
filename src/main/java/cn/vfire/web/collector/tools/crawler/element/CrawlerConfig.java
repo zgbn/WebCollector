@@ -108,10 +108,10 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 
 	@Override
 	protected void setFieldByNode(String fname, Node childNode) throws CrawlerConfigXmlException {
-		
+
 		childNode = this.valiChildNode(fname, childNode);
 		String value = childNode.getTextContent();
-		
+
 		if (NAME.equals(fname)) {
 			this.name = value;
 		}
@@ -140,10 +140,10 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 	@Override
 	protected void setFieldByAttr(String fname, String fvalue) throws CrawlerConfigXmlException {
 		if (ID.equals(fname)) {
-			fvalue = this.valiAttrNode(fname, fvalue) ;
+			fvalue = this.valiAttrNode(fname, fvalue);
 			this.id = fvalue;
 		}
-		
+
 		try {
 			if (DEPTH.equals(fname)) {
 				this.depth = Integer.parseInt(fvalue);
@@ -178,6 +178,11 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 	}
 
 
+	/**
+	 * Crawler任务配置Datamode描述
+	 * 
+	 * @return
+	 */
 	public List<DataMode> getDatamode() {
 		return Collections.unmodifiableList(datamode);
 	}

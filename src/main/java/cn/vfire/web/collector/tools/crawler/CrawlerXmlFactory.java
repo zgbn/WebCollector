@@ -75,7 +75,9 @@ public final class CrawlerXmlFactory {
 			if (xmlFile.isFile()) {
 				String xmlFileName = xmlFile.getName();
 				flag = pattern.matcher(xmlFileName).find();
-				if (flag) { return new File[] { xmlFile }; }
+				if (flag) {
+					return new File[] { xmlFile };
+				}
 			}
 			else if (xmlFile.isDirectory()) {
 				File[] list = xmlFile.listFiles(new FileFilter() {
@@ -104,6 +106,13 @@ public final class CrawlerXmlFactory {
 	}
 
 
+	/**
+	 * 始解析CrawlerXml配置文件，支持多个文件。所有Crawler任务的id。
+	 * 
+	 * @param crawlerConfigXml
+	 * @return
+	 * @throws Exception
+	 */
 	public List<String> parseXmlFile(File... crawlerConfigXml) throws Exception {
 
 		int length = crawlerConfigXml.length;
@@ -138,27 +147,37 @@ public final class CrawlerXmlFactory {
 
 			Element<?> element = this.crawlerConfigs.getCacheElementMap().get(key);
 
-			for(String ref : element.getRef()){
-				
-				Element<?> refElement = this.crawlerConfigs.getCacheElementMap().get(ref) ;
-				
+			for (String ref : element.getRef()) {
+
+				Element<?> refElement = this.crawlerConfigs.getCacheElementMap().get(ref);
+
 				element.setRefElement(refElement);
-				
+
 			}
 		}
 	}
 
 
+	/**
+	 * Crawler任务配置详细描述。数据格式为json。
+	 * 
+	 * @param crawlerId
+	 * @return
+	 */
 	public String getCrawlerForJson(String crawlerId) {
 		CrawlerConfig crawler = this.getCrawler(crawlerId);
-		if (crawler != null) { return this.jsonTools.toJson(crawler); }
+		if (crawler != null) {
+			return this.jsonTools.toJson(crawler);
+		}
 		return null;
 	}
 
 
 	public CrawlerConfig getCrawler(String crawlerId) {
 		Element<?> element = this.crawlerConfigs.getCacheElementMap().get(crawlerId);
-		if (element instanceof CrawlerConfig) { return (CrawlerConfig) element; }
+		if (element instanceof CrawlerConfig) {
+			return (CrawlerConfig) element;
+		}
 		return null;
 	}
 
@@ -182,6 +201,11 @@ public final class CrawlerXmlFactory {
 	}
 
 
+	/**
+	 * Crawler任务id，所有任务的id。
+	 * 
+	 * @return
+	 */
 	public List<String> getCrawlerIds() {
 		List<String> list = this.crawlerConfigs.getCrawlerIds();
 		return list;

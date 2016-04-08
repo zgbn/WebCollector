@@ -35,7 +35,7 @@ public class CrawlerXmlFactoryTest {
 
 			log.info("Crawler任务配置Datamode.ref描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getRef());
 
-			log.info("Crawler任务配置Datamode.ref描述:{}",
+			log.info("Crawler任务配置Datamode.Outdata描述:{}",
 					xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getOutdata());
 			log.info("Crawler任务配置Datamode.ref描述:{}",
 					xmlTool.getCrawler("crawlerJob").getDatamode().get(1).getOutdata());
