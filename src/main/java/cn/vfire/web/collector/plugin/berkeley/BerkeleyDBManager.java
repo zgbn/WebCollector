@@ -90,7 +90,7 @@ public class BerkeleyDBManager extends DBManager {
 	/**
 	 * 父类抽象方法的实现，关闭数据库资源。
 	 * 
-	 * @see cn.edu.hfut.dmic.webcollector.crawldb.DBManager#close()
+	 * @see cn.TaskStorageManager.hfut.dmic.webcollector.crawldb.DBManager#close()
 	 */
 	@Override
 	public void close() throws Exception {
@@ -137,7 +137,7 @@ public class BerkeleyDBManager extends DBManager {
 	 * @param force
 	 *            false的时候任务去重复处理
 	 * 
-	 * @see cn.edu.hfut.dmic.webcollector.crawldb.DBManager#inject(cn.edu.hfut.dmic.webcollector.model.CrawlDatum,
+	 * @see cn.TaskStorageManager.hfut.dmic.webcollector.crawldb.DBManager#inject(cn.edu.hfut.dmic.webcollector.model.CrawlDatum,
 	 *      boolean)
 	 */
 	@Override
@@ -280,7 +280,7 @@ public class BerkeleyDBManager extends DBManager {
 	/**
 	 * 父类的实现，打开数据库资源
 	 *
-	 * @see cn.edu.hfut.dmic.webcollector.crawldb.DBManager#open()
+	 * @see cn.TaskStorageManager.hfut.dmic.webcollector.crawldb.DBManager#open()
 	 */
 	@Override
 	public void open() throws Exception {

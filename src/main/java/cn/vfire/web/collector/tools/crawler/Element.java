@@ -71,7 +71,7 @@ public abstract class Element<T extends Element<?>> implements ElementInfo, Seri
 	protected static final String VALUE = "value";
 
 	protected static final String SELECTER = "selecter";
-	
+
 	protected static final String LABEL = "label";
 
 	protected static final String CLASS = "class";
@@ -150,6 +150,11 @@ public abstract class Element<T extends Element<?>> implements ElementInfo, Seri
 	}
 
 
+	/**
+	 * Crawler任务配置Datamode.ref描述
+	 * 
+	 * @return
+	 */
 	public List<String> getRef() {
 		return ref;
 	}

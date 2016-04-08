@@ -75,7 +75,7 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 			this.setOutfile(fieldElement);
 		}
 		else if (CRAWLERCONFIG.equals(fname)) {
-			childNode = this.valiChildNode(fname, childNode) ;
+			childNode = this.valiChildNode(fname, childNode);
 			CrawlerConfig fieldElement = new CrawlerConfig();
 			fieldElement.parse(childNode);
 			this.setCrawlerconfig(fieldElement);
@@ -84,6 +84,9 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 	}
 
 
+	/**
+	 * 得到所有Crawler任务的id。
+	 */
 	@Override
 	public List<String> getCrawlerIds() {
 		return Collections.unmodifiableList(super.getCrawlerIds());
