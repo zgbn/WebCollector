@@ -31,6 +31,7 @@ import cn.vfire.web.collector.model.CrawlDatum;
 /**
  * 抓去任务的格式化
  */
+@SuppressWarnings("deprecation")
 public class CrawlDatumFormater {
 
 	/** 格式化日期 */

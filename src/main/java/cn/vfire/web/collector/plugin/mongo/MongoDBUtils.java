@@ -17,59 +17,56 @@
  */
 package cn.vfire.web.collector.plugin.mongo;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.UpdateOptions;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
+import org.bson.Document;
 
 import cn.vfire.web.collector.model.CrawlDatum;
 import cn.vfire.web.collector.util.CrawlDatumFormater;
 
-import java.io.UnsupportedEncodingException;
-import org.bson.Document;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
 
 /**
  *
  * @author hu
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class MongoDBUtils {
 
-    public static UpdateOptions forcedUo = new UpdateOptions().upsert(true);
-    public static UpdateOptions uo = new UpdateOptions().upsert(false);
+	public static UpdateOptions forcedUo = new UpdateOptions().upsert(true);
+	public static UpdateOptions uo = new UpdateOptions().upsert(false);
 
-    public static void updateOrInsert(MongoCollection col, Document doc) {
-        String key = doc.getString("_id");
-        Document idDoc = new Document("_id", key);
-        col.replaceOne(idDoc, doc, forcedUo);
-    }
+	public static void updateOrInsert(MongoCollection col, Document doc) {
+		String key = doc.getString("_id");
+		Document idDoc = new Document("_id", key);
+		col.replaceOne(idDoc, doc, forcedUo);
+	}
 
-    public static void updateOrInsert(MongoCollection col, CrawlDatum datum) {
-        Document doc = CrawlDatumFormater.datumToBson(datum);
-        String key = datum.getKey();
-        Document idDoc = new Document("_id", key);
-        col.replaceOne(idDoc, doc, forcedUo);
-    }
+	public static void updateOrInsert(MongoCollection col, CrawlDatum datum) {
+		Document doc = CrawlDatumFormater.datumToBson(datum);
+		String key = datum.getKey();
+		Document idDoc = new Document("_id", key);
+		col.replaceOne(idDoc, doc, forcedUo);
+	}
 
-    public static void insertIfNotExists(MongoCollection col, CrawlDatum datum) {
+	public static void insertIfNotExists(MongoCollection col, CrawlDatum datum) {
 
-        String key = datum.getKey();
-        Document idDoc = new Document("_id", key);
-        FindIterable findIte = col.find(idDoc);
-        if (findIte.first() == null) {
-            Document doc = CrawlDatumFormater.datumToBson(datum);
-            col.insertOne(doc);
-        }
-    }
+		String key = datum.getKey();
+		Document idDoc = new Document("_id", key);
+		FindIterable findIte = col.find(idDoc);
+		if (findIte.first() == null) {
+			Document doc = CrawlDatumFormater.datumToBson(datum);
+			col.insertOne(doc);
+		}
+	}
 
-    public static void insertIfNotExists(MongoCollection col, Document doc) {
-        String key = doc.getString("_id");
-        Document idDoc = new Document("_id", key);
-        FindIterable findIte = col.find(idDoc);
-        if (findIte.first() == null) {
-            col.insertOne(doc);
-        }
-    }
+	public static void insertIfNotExists(MongoCollection col, Document doc) {
+		String key = doc.getString("_id");
+		Document idDoc = new Document("_id", key);
+		FindIterable findIte = col.find(idDoc);
+		if (findIte.first() == null) {
+			col.insertOne(doc);
+		}
+	}
 
 }

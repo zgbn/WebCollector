@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,9 @@ import org.slf4j.LoggerFactory;
  * @author hu
  */
 public class Proxys extends ArrayList<Proxy> {
-    public static final Logger LOG=LoggerFactory.getLogger(Proxys.class);
+	private static final long serialVersionUID = 1L;
+
+	public static final Logger LOG=LoggerFactory.getLogger(Proxys.class);
 
     public static Random random = new Random();
     
@@ -68,7 +71,8 @@ public class Proxys extends ArrayList<Proxy> {
     }
 
 
-    public void addAllFromFile(File file) throws Exception {
+    @SuppressWarnings("resource")
+	public void addAllFromFile(File file) throws Exception {
         FileInputStream fis = new FileInputStream(file);
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String line = null;

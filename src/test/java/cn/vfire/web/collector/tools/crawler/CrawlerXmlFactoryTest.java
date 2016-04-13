@@ -6,6 +6,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 
+import cn.vfire.web.collector3.tools.crawler.CrawlerXmlFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,14 +32,14 @@ public class CrawlerXmlFactoryTest {
 
 			log.info("Crawler任务配置详细描述:{}", xmlTool.getCrawlerForJson("crawlerJob"));
 
-			log.info("Crawler任务配置Datamode描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode());
-
-			log.info("Crawler任务配置Datamode.ref描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getRef());
-
-			log.info("Crawler任务配置Datamode.Outdata描述:{}",
-					xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getOutdata());
-			log.info("Crawler任务配置Datamode.ref描述:{}",
-					xmlTool.getCrawler("crawlerJob").getDatamode().get(1).getOutdata());
+//			log.info("Crawler任务配置Datamode描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode());
+//
+//			log.info("Crawler任务配置Datamode.ref描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getRef());
+//
+//			log.info("Crawler任务配置Datamode.Outdata描述:{}",
+//					xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getOutdata());
+//			log.info("Crawler任务配置Datamode.ref描述:{}",
+//					xmlTool.getCrawler("crawlerJob").getDatamode().get(1).getOutdata());
 		}
 		catch (ParserConfigurationException e) {
 			e.printStackTrace();

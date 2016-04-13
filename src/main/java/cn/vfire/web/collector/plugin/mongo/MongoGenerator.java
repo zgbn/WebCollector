@@ -17,39 +17,33 @@
  */
 package cn.vfire.web.collector.plugin.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.CursorConfig;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
+import java.util.Iterator;
+
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.vfire.web.collector.crawldb.Generator;
 import cn.vfire.web.collector.model.CrawlDatum;
 import cn.vfire.web.collector.util.Config;
 import cn.vfire.web.collector.util.CrawlDatumFormater;
 
-import java.io.File;
-import java.util.Iterator;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 /**
  *
  * @author hu
  */
+@SuppressWarnings({"unchecked","rawtypes"})
 public class MongoGenerator implements Generator {
 
     public static final Logger LOG = LoggerFactory.getLogger(MongoGenerator.class);
 
     Iterator<Document> cursor = null;
-    MongoCollection crawldb = null;
+    
+	MongoCollection crawldb = null;
     protected int totalGenerate = 0;
     protected int topN = -1;
 
@@ -67,7 +61,8 @@ public class MongoGenerator implements Generator {
 
     }
 
-    @Override
+    
+	@Override
     public void open() throws Exception {
         database = client.getDatabase(crawlID);
         crawldb = database.getCollection("crawldb");

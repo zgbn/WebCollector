@@ -17,21 +17,9 @@
  */
 package cn.vfire.web.collector.plugin.mongo;
 
-
-import com.mongodb.DBCursor;
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.UpdateOptions;
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.CursorConfig;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.vfire.web.collector.crawldb.DBManager;
 import cn.vfire.web.collector.crawldb.Generator;
@@ -39,167 +27,164 @@ import cn.vfire.web.collector.model.CrawlDatum;
 import cn.vfire.web.collector.model.CrawlDatums;
 import cn.vfire.web.collector.util.CrawlDatumFormater;
 
-import java.io.File;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 /**
  *
  * @author hu
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class MongoDBManager extends DBManager {
 
-    Logger LOG = LoggerFactory.getLogger(MongoDBManager.class);
+	Logger LOG = LoggerFactory.getLogger(MongoDBManager.class);
 
-    String crawlID;
-    MongoClient client;
-    MongoDatabase database;
-    MongoGenerator generator=null;
+	String crawlID;
+	MongoClient client;
+	MongoDatabase database;
+	MongoGenerator generator = null;
 
-    public MongoDBManager(String crawlID, MongoClient client) {
-        this.crawlID = crawlID;
-        this.client = client;
-        this.generator=new MongoGenerator(crawlID,client);
+	public MongoDBManager(String crawlID, MongoClient client) {
+		this.crawlID = crawlID;
+		this.client = client;
+		this.generator = new MongoGenerator(crawlID, client);
 
-    }
+	}
 
-    @Override
-    public void inject(CrawlDatum datum, boolean force) throws Exception {
-        MongoCollection crawldb = database.getCollection("crawldb");
-        if (force) {
-            MongoDBUtils.updateOrInsert(crawldb, datum);
-        } else {
-            MongoDBUtils.insertIfNotExists(crawldb, datum);
-        }
-    }
+	@Override
+	public void inject(CrawlDatum datum, boolean force) throws Exception {
+		MongoCollection crawldb = database.getCollection("crawldb");
+		if (force) {
+			MongoDBUtils.updateOrInsert(crawldb, datum);
+		} else {
+			MongoDBUtils.insertIfNotExists(crawldb, datum);
+		}
+	}
 
-    @Override
-    public void open() throws Exception {
-        database = client.getDatabase(crawlID);
-    }
+	@Override
+	public void open() throws Exception {
+		database = client.getDatabase(crawlID);
+	}
 
-    @Override
-    public void close() throws Exception {
-        client.close();
-    }
+	@Override
+	public void close() throws Exception {
+		client.close();
+	}
 
-    //public int BUFFER_SIZE = 20;
-    MongoCollection fetch = null;
-    MongoCollection link = null;
-    MongoCollection redirect = null;
+	// public int BUFFER_SIZE = 20;
+	MongoCollection fetch = null;
+	MongoCollection link = null;
+	MongoCollection redirect = null;
 
-    @Override
-    public void initSegmentWriter() throws Exception {
-        fetch = database.getCollection("fetch");
-        link = database.getCollection("link");
-        redirect = database.getCollection("redirect");
-    }
+	@Override
+	public void initSegmentWriter() throws Exception {
+		fetch = database.getCollection("fetch");
+		link = database.getCollection("link");
+		redirect = database.getCollection("redirect");
+	}
 
-    @Override
-    public void wrtieFetchSegment(CrawlDatum fetchDatum) throws Exception {
-        Document doc = CrawlDatumFormater.datumToBson(fetchDatum);
-        fetch.insertOne(doc);
-    }
+	@Override
+	public void wrtieFetchSegment(CrawlDatum fetchDatum) throws Exception {
+		Document doc = CrawlDatumFormater.datumToBson(fetchDatum);
+		fetch.insertOne(doc);
+	}
 
-    @Override
-    public void writeRedirectSegment(CrawlDatum datum, String realUrl) throws Exception {
-        String key = datum.getKey();
-        Document doc = new Document("_id", key)
-                .append("realUrl", realUrl);
-        MongoDBUtils.updateOrInsert(redirect, doc);
-    }
+	@Override
+	public void writeRedirectSegment(CrawlDatum datum, String realUrl) throws Exception {
+		String key = datum.getKey();
+		Document doc = new Document("_id", key).append("realUrl", realUrl);
+		MongoDBUtils.updateOrInsert(redirect, doc);
+	}
 
-    @Override
-    public synchronized void wrtieParseSegment(CrawlDatums parseDatums) throws Exception {
-        for (CrawlDatum datum : parseDatums) {
-            MongoDBUtils.updateOrInsert(link, datum);
-        }
-    }
+	@Override
+	public synchronized void wrtieParseSegment(CrawlDatums parseDatums) throws Exception {
+		for (CrawlDatum datum : parseDatums) {
+			MongoDBUtils.updateOrInsert(link, datum);
+		}
+	}
 
-    @Override
-    public void closeSegmentWriter() throws Exception {
+	@Override
+	public void closeSegmentWriter() throws Exception {
 
-    }
+	}
 
-    @Override
-    public void merge() throws Exception {
-        MongoCollection crawldb = database.getCollection("crawldb");
-        MongoCollection fetch = database.getCollection("fetch");
-        MongoCollection link = database.getCollection("link");
-        LOG.info("start merge");
+	@Override
+	public void merge() throws Exception {
+		MongoCollection crawldb = database.getCollection("crawldb");
+		MongoCollection fetch = database.getCollection("fetch");
+		MongoCollection link = database.getCollection("link");
+		LOG.info("start merge");
 
-        /*合并fetch库*/
-        LOG.info("merge fetch database");
-        FindIterable<Document> findIte = fetch.find();
-        for (Document fetchDoc : findIte) {
-            MongoDBUtils.updateOrInsert(crawldb, fetchDoc);
-        }
-        /*合并link库*/
-        LOG.info("merge link database");
-        findIte = link.find();
-        for (Document linkDoc : findIte) {
-            MongoDBUtils.insertIfNotExists(crawldb, linkDoc);
-        }
+		/* 合并fetch库 */
+		LOG.info("merge fetch database");
+		FindIterable<Document> findIte = fetch.find();
+		for (Document fetchDoc : findIte) {
+			MongoDBUtils.updateOrInsert(crawldb, fetchDoc);
+		}
+		/* 合并link库 */
+		LOG.info("merge link database");
+		findIte = link.find();
+		for (Document linkDoc : findIte) {
+			MongoDBUtils.insertIfNotExists(crawldb, linkDoc);
+		}
 
-        LOG.info("end merge");
+		LOG.info("end merge");
 
-        fetch.drop();
-        LOG.debug("remove fetch database");
-        link.drop();
-        LOG.debug("remove link database");
+		fetch.drop();
+		LOG.debug("remove fetch database");
+		link.drop();
+		LOG.debug("remove link database");
 
-    }
+	}
 
-    @Override
-    public void lock() throws Exception {
-        MongoCollection lock = database.getCollection("lock");
-        Document lockDoc = new Document("_id", "lock")
-                .append("lock", "locked");
-        MongoDBUtils.updateOrInsert(lock, lockDoc);
-    }
+	@Override
+	public void lock() throws Exception {
+		MongoCollection lock = database.getCollection("lock");
+		Document lockDoc = new Document("_id", "lock").append("lock", "locked");
+		MongoDBUtils.updateOrInsert(lock, lockDoc);
+	}
 
-    @Override
-    public boolean isLocked() throws Exception {
-        MongoCollection lock = database.getCollection("lock");
-        Document idDoc = new Document("_id", "lock");
-        FindIterable<Document> findIte = lock.find(idDoc);
-        Document lockDoc = findIte.first();
-        if (lockDoc != null && lockDoc.getString("lock").equals("locked")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+	@Override
+	public boolean isLocked() throws Exception {
+		MongoCollection lock = database.getCollection("lock");
+		Document idDoc = new Document("_id", "lock");
+		FindIterable<Document> findIte = lock.find(idDoc);
+		Document lockDoc = findIte.first();
+		if (lockDoc != null && lockDoc.getString("lock").equals("locked")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-    @Override
-    public void unlock() throws Exception {
-        MongoCollection lock = database.getCollection("lock");
-        Document lockDoc = new Document("_id", "lock")
-                .append("lock", "unlocked");
-        MongoDBUtils.updateOrInsert(lock, lockDoc);
-    }
+	@Override
+	public void unlock() throws Exception {
+		MongoCollection lock = database.getCollection("lock");
+		Document lockDoc = new Document("_id", "lock").append("lock", "unlocked");
+		MongoDBUtils.updateOrInsert(lock, lockDoc);
+	}
 
-    @Override
-    public boolean isDBExists() {
-        for (String name : client.listDatabaseNames()) {
-            if (name.equals(crawlID)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean isDBExists() {
+		for (String name : client.listDatabaseNames()) {
+			if (name.equals(crawlID)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public void clear() throws Exception {
-        database=client.getDatabase(crawlID);
-        database.drop();
-    }
+	@Override
+	public void clear() throws Exception {
+		database = client.getDatabase(crawlID);
+		database.drop();
+	}
 
-    @Override
-    public Generator getGenerator() {
-        return generator;
-    }
+	@Override
+	public Generator getGenerator() {
+		return generator;
+	}
 
 }

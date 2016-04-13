@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import lombok.Getter;
+
 /**
  * 用于存储多个CrawlDatum的数据结构
  *
@@ -28,7 +30,8 @@ import java.util.Iterator;
  */
 public class CrawlDatums implements Iterable<CrawlDatum> {
 
-    protected ArrayList<CrawlDatum> dataList = new ArrayList<CrawlDatum>();
+	@Getter
+    private ArrayList<CrawlDatum> dataList = new ArrayList<CrawlDatum>();
 
     public CrawlDatums() {
     }

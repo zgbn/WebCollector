@@ -40,7 +40,7 @@
 	</appender>
 
 	<!-- 指定logger的设置，additivity指示是否遵循缺省的继承机制 -->
-	<logger name="cn.vfire.web.collector2" additivity="false">
+	<logger name="cn.vfire.web.collector3.tools.crawler.event" additivity="false">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="logfileSize" />

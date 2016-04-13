@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
  *
  * @author hu
  */
+@SuppressWarnings("unused")
 public class RegexRule {
     
     public RegexRule(){
@@ -99,7 +100,7 @@ public class RegexRule {
      * @param str
      * @return 
      */
-    public boolean satisfy(String str) {
+	public boolean satisfy(String str) {
 
         int state = 0;
         for (String nregex : negative) {

@@ -363,6 +363,7 @@ public class Fetcher {
 	 *            给抓取提供任务的Generator(抓取任务生成器)
 	 * @throws IOException
 	 */
+	@SuppressWarnings("deprecation")
 	public void fetchAll(Generator generator) throws Exception {
 		if (executor == null) {
 			LOG.info("Please Specify A Executor!");

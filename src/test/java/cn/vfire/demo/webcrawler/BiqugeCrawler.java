@@ -31,6 +31,7 @@ import cn.vfire.web.collector.plugin.berkeley.BreadthCrawler;
  *
  * @author hu
  */
+@SuppressWarnings("unused")
 public class BiqugeCrawler extends BreadthCrawler {
 
 	private ConcurrentSkipListMap<String, Integer> excptionCounts = new ConcurrentSkipListMap<String, Integer>();
@@ -44,7 +45,6 @@ public class BiqugeCrawler extends BreadthCrawler {
 	private String regular1 = "http://www\\.biquge\\.la/book/[0-9]+/?";
 
 	private String regular2 = "http://www\\.biquge\\.la/book/[0-9]+/[0-9]+\\.html";
-
 
 	/**
 	 * @param crawlPath
@@ -66,7 +66,6 @@ public class BiqugeCrawler extends BreadthCrawler {
 		/* do not fetch url contains # */
 		this.addRegex("-.*#.*");
 	}
-
 
 	public void visit(Page page, CrawlDatums next) {
 
@@ -129,7 +128,9 @@ public class BiqugeCrawler extends BreadthCrawler {
 
 		if (page.matchUrl(this.regular1)) {
 
-			if (this.novelListMode == null) { return; }
+			if (this.novelListMode == null) {
+				return;
+			}
 
 			NovelMode mode = new NovelMode();
 
@@ -148,12 +149,12 @@ public class BiqugeCrawler extends BreadthCrawler {
 
 				for (int i = 0; i < eles.size(); i++) {
 					Element e = eles.get(i);
-					Elements a = e.select("a") ;
-					NodeMode node = new NodeMode() ;
-					node.setIdx(i+1); 
+					Elements a = e.select("a");
+					NodeMode node = new NodeMode();
+					node.setIdx(i + 1);
 					node.setLink(a.attr("href"));
 					node.setName(a.text());
-					
+
 					directorys.add(node);
 				}
 			}
@@ -170,7 +171,9 @@ public class BiqugeCrawler extends BreadthCrawler {
 
 		if (page.matchUrl(this.regular2)) {
 
-			if (this.novelListMode == null) { return; }
+			if (this.novelListMode == null) {
+				return;
+			}
 
 			ChapterMode mode = new ChapterMode();
 
@@ -213,14 +216,13 @@ public class BiqugeCrawler extends BreadthCrawler {
 		System.out.println(outfile.getPath());
 	}
 
-
 	@Override
 	public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception {
 		/*
 		 * WebCollector自带一个Proxys类，通过Proxys.nextRandom()方法可以随机获取加入的代理。
 		 * 通过Proxys.add(“ip”,”端口号”);添加代理。
 		 * 如果本机也参与http请求，可用Proxys.addEmpty()方法将本机加入。
-		 *
+		 * 
 		 * 覆盖Crawler的getResponse()方法，即可自定义使用随机代理的http请求： HttpRequest request =
 		 * new HttpRequest(crawlDatum); request.setProxy(proxys.nextRandom());
 		 * return request.getResponse();
@@ -234,7 +236,6 @@ public class BiqugeCrawler extends BreadthCrawler {
 		return request.getResponse();
 
 	}
-
 
 	public static void main(String[] args) throws Exception {
 		BiqugeCrawler crawler = new BiqugeCrawler("crawl", true);
