@@ -2,14 +2,19 @@ package cn.vfire.web.collector3.crawler.event;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import cn.vfire.web.collector3.crawler.pool.TaskPool;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.CrawlerAttrInfo;
 import cn.vfire.web.collector3.model.Page;
 import cn.vfire.web.collector3.tools.Tools;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
-import cn.vfire.web.collector3.tools.crawler.event.CrawlerEvent;
-import cn.vfire.web.collector3.tools.pool.TaskPool;
 
+/**
+ * XXX 需要实现接口方法
+ * 
+ * @author ChenGang
+ *
+ */
 @Slf4j
 public class ControlCrawlerEvent implements CrawlerEvent {
 
@@ -56,12 +61,6 @@ public class ControlCrawlerEvent implements CrawlerEvent {
 
 
 	@Override
-	public void facherExceptin(CrawlDatum crawlDatum, TaskPool taskPool, Exception e) {
-		taskPool.save(crawlDatum);
-	}
-
-
-	@Override
 	public void facherStart(int serialNumber, TaskPool taskPool) {
 	}
 
@@ -73,14 +72,8 @@ public class ControlCrawlerEvent implements CrawlerEvent {
 
 
 	@Override
-	public void setCrawlerAttrInfo(CrawlerAttrInfo crawlerAttrInfo) {
-		this.crawlerAttrInfo = crawlerAttrInfo;
-	}
-
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
+	public void facherExceptin(CrawlDatum crawlDatum, TaskPool taskPool, Exception e) {
+		// TODO Auto-generated method stub
 	}
 
 }
