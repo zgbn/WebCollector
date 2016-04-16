@@ -2,6 +2,8 @@ package cn.vfire.web.collector3.db;
 
 /**
  * 数据库操作锁管理接口
+ * 
+ * @see {@link DBManager } {@link Statement}
  */
 public interface DBLock {
 
@@ -12,6 +14,7 @@ public interface DBLock {
 	 */
 	public void lock() throws Exception;
 
+
 	/**
 	 * 判断是否被锁
 	 * 
@@ -19,6 +22,7 @@ public interface DBLock {
 	 * @throws Exception
 	 */
 	public boolean isLocked() throws Exception;
+
 
 	/**
 	 * 解锁
