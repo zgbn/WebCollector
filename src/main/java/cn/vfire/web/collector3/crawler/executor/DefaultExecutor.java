@@ -1,23 +1,18 @@
 package cn.vfire.web.collector3.crawler.executor;
 
-import lombok.Setter;
 import cn.vfire.web.collector3.crawler.Default;
+import cn.vfire.web.collector3.crawler.ware.RequesterWare;
 import cn.vfire.web.collector3.lang.CrawlerNetException;
 import cn.vfire.web.collector3.lang.enums.CrawlerExpInfo;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.Page;
 import cn.vfire.web.collector3.net.HttpRequest;
 import cn.vfire.web.collector3.net.HttpResponse;
-import cn.vfire.web.collector3.tools.executor.Executor;
-import cn.vfire.web.collector3.tools.executor.Requester;
 
-public final class DefaultExecutor implements Executor, Requester, Default {
+public final class DefaultExecutor implements Executor, Requester, RequesterWare, Default {
 
-	@Setter
 	private Requester requester;
 
-	public DefaultExecutor() {
-	}
 
 	@Override
 	public Page execute(CrawlDatum crawlDatum) throws CrawlerNetException {
@@ -34,7 +29,10 @@ public final class DefaultExecutor implements Executor, Requester, Default {
 
 	}
 
+
 	private Page defaultExe(CrawlDatum crawlDatum) throws CrawlerNetException {
+
+		this.requester = this.requester == null ? this : this.requester;
 
 		HttpResponse response = null;
 
@@ -44,39 +42,45 @@ public final class DefaultExecutor implements Executor, Requester, Default {
 
 			if (crawlDatum.isProxy()) {
 				request = new HttpRequest(crawlDatum, crawlDatum.getProxy());
-			} else {
+			}
+			else {
 				request = new HttpRequest(crawlDatum);
 			}
 
-			request = this.getRequester().setRequestAndGet(request, crawlDatum);
+			request = this.requester.setRequestAndGet(request, crawlDatum);
 
-			response = this.getRequester().setResponseAndGet(request.getResponse(), crawlDatum);
+			response = this.requester.setResponseAndGet(request.getResponse(), crawlDatum);
 
 			Page page = new Page(crawlDatum, response);
 
 			return page;
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 
-			throw new CrawlerNetException(CrawlerExpInfo.NET.setInfo("URL={} Proxy={}", crawlDatum.getUrl(), crawlDatum.getProxy()), e);
+			throw new CrawlerNetException(
+					CrawlerExpInfo.NET.setInfo("URL={} Proxy={}", crawlDatum.getUrl(), crawlDatum.getProxy()), e);
 
 		}
 
 	}
+
 
 	@Override
 	public HttpResponse setResponseAndGet(HttpResponse response, CrawlDatum crawlDatum) throws CrawlerNetException {
 		return response;
 	}
 
+
 	@Override
 	public HttpRequest setRequestAndGet(HttpRequest request, CrawlDatum crawlDatum) throws CrawlerNetException {
 		return request;
 	}
 
-	public Requester getRequester() {
-		return requester == null ? this : requester;
-	}
 
+	@Override
+	public void setRequester(Requester requester) {
+		this.requester = requester;
+	}
 
 }
