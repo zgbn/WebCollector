@@ -3,16 +3,17 @@ package cn.vfire.web.collector3.crawler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cn.vfire.web.collector3.crawler.event.CrawlerEvent;
+import cn.vfire.web.collector3.crawler.executor.Executor;
+import cn.vfire.web.collector3.crawler.pool.Generator;
+import cn.vfire.web.collector3.crawler.pool.TaskPool;
+import cn.vfire.web.collector3.crawler.snapshot.CrawlSnapshot;
+import cn.vfire.web.collector3.crawler.visitor.CrawlerVisitor;
+import cn.vfire.web.collector3.model.CrawlDatum;
+import cn.vfire.web.collector3.model.Page;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import cn.vfire.web.collector3.crawler.event.DefaultCrawlerEvent;
-import cn.vfire.web.collector3.crawler.executor.DefaultExecutor;
-import cn.vfire.web.collector3.model.CrawlDatum;
-import cn.vfire.web.collector3.model.Page;
-import cn.vfire.web.collector3.tools.crawler.snapshot.CrawlSnapshot;
-import cn.vfire.web.collector3.tools.executor.Requester;
-import cn.vfire.web.collector3.tools.pool.TaskPool;
 
 /**
  * 页面访问数据抓取
@@ -23,6 +24,12 @@ import cn.vfire.web.collector3.tools.pool.TaskPool;
 @Slf4j
 public class Fetcher {
 
+	/**
+	 * 触手线程级
+	 * 
+	 * @author ChenGang
+	 *
+	 */
 	public class FetcherThread implements Runnable {
 
 		private CountDownLatch countDownLatch;
@@ -63,7 +70,11 @@ public class Fetcher {
 
 				Page page = null;
 
-				while ((crawlDatum = Fetcher.this.taskPool.poll()) != null) {
+				Generator generator = Fetcher.this.taskPool.getGenerator();
+
+				while (generator.hasNext()) {
+
+					crawlDatum = generator.next();
 
 					// 执行任务
 					{
@@ -107,8 +118,6 @@ public class Fetcher {
 						finally {
 
 							exeCount = exeCount + 1;
-
-							Fetcher.this.crawlDatumCount.incrementAndGet();
 
 							// 运行快照
 							Fetcher.this.runNapshot();
@@ -155,7 +164,7 @@ public class Fetcher {
 
 
 	@Setter
-	private DefaultExecutor executor;
+	private Executor executor;
 
 	@Setter
 	private CrawlerVisitor visitor;
@@ -164,7 +173,7 @@ public class Fetcher {
 	private CrawlSnapshot snapshot;
 
 	@Setter
-	private DefaultCrawlerEvent event;
+	private CrawlerEvent event;
 
 	@Setter
 	private TaskPool taskPool;
@@ -174,11 +183,6 @@ public class Fetcher {
 
 	/** 活动的线程 */
 	private AtomicInteger activeThreads = new AtomicInteger(0);
-
-	/**
-	 * 总共完成多少任务
-	 */
-	private AtomicInteger crawlDatumCount = new AtomicInteger(0);
 
 
 	/**
@@ -202,11 +206,18 @@ public class Fetcher {
 	 */
 	public Fetcher(String name, TaskPool taskPool) {
 		this.name = name;
-		this.setTaskPool(taskPool);
-		this.executor.setRequester(this.executor);
+		this.taskPool = taskPool;
 	}
 
 
+	public long getTotalCount() {
+		return (long) this.taskPool.getTotalGenerate();
+	}
+
+
+	/**
+	 * 异常快照
+	 */
 	private void exceptionNapshot() {
 		if (this.snapshot != null) {
 			this.snapshot.incrementAndGetShapshotExceptionCount();
@@ -214,26 +225,24 @@ public class Fetcher {
 	}
 
 
-	public int getCrawlDatumCount() {
-		return crawlDatumCount.get();
-	}
-
-
+	/**
+	 * 获取活动线程个数
+	 * 
+	 * @return
+	 */
 	public int getActiveThreads() {
 		return this.activeThreads.get();
 	}
 
 
+	/**
+	 * 运行时快照
+	 */
 	private void runNapshot() {
 		if (this.snapshot != null) {
 			this.snapshot.incrementAndGetShapshotRunCount();
 			this.snapshot.incrementShapshotRuntime();
 		}
-	}
-
-
-	public void setRequester(Requester requester) {
-		this.executor.setRequester(requester);
 	}
 
 }

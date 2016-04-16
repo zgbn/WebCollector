@@ -2,19 +2,24 @@ package cn.vfire.web.collector3.crawler;
 
 import java.util.List;
 
-import lombok.Getter;
 import cn.vfire.web.collector3.crawler.event.ControlCrawlerEvent;
+import cn.vfire.web.collector3.crawler.event.CrawlerEvent;
 import cn.vfire.web.collector3.crawler.event.DefaultCrawlerEvent;
 import cn.vfire.web.collector3.crawler.executor.DefaultExecutor;
-import cn.vfire.web.collector3.crawler.pool.DefaultFetcherPool;
-import cn.vfire.web.collector3.crawler.pool.ProxyTaskPool;
-import cn.vfire.web.collector3.crawler.snapshot.DefaultCrawlSnapshot;
+import cn.vfire.web.collector3.crawler.executor.Executor;
+import cn.vfire.web.collector3.crawler.executor.Requester;
+import cn.vfire.web.collector3.crawler.pool.FetcherThreadPool;
+import cn.vfire.web.collector3.crawler.pool.ProxyFetcherPool;
+import cn.vfire.web.collector3.crawler.pool.TaskPool;
+import cn.vfire.web.collector3.crawler.snapshot.CrawlSnapshot;
+import cn.vfire.web.collector3.crawler.visitor.CrawlerVisitor;
 import cn.vfire.web.collector3.crawler.visitor.ProxyCrawlerVisitor;
+import cn.vfire.web.collector3.model.CrawlerAttrInfo;
+import cn.vfire.web.collector3.tools.Tools;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
-import cn.vfire.web.collector3.tools.crawler.event.CrawlerEvent;
-import cn.vfire.web.collector3.tools.crawler.snapshot.CrawlSnapshot;
-import cn.vfire.web.collector3.tools.pool.FetcherThreadPool;
-import cn.vfire.web.collector3.tools.pool.TaskPool;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 爬虫，一个爬虫只执行一个爬虫批任务。
@@ -22,55 +27,50 @@ import cn.vfire.web.collector3.tools.pool.TaskPool;
  * @author ChenGang
  *
  */
+@Slf4j
 public class Crawler {
 
+	private CrawlerAttrInfo crawlerAttrInfo;
+
 	/** 爬虫任务配置信息对象 */
-	@Getter
 	private CrawlerConfig config;
 
 	/** 爬虫ID */
-	@Getter
 	private String id;
 
 	/** 爬虫触手 */
 	@Getter
+	@Setter
 	private Fetcher fetcher;
 
 	/** 注入任务池，任务池中有数据爬虫才会工作。 */
 	@Getter
-	private ProxyTaskPool taskPool;
+	@Setter
+	private TaskPool taskPool;
 
 	/** 爬虫快照 */
 	@Getter
+	@Setter
 	private CrawlSnapshot snapshot;
-
-	/** 爬虫事件对象集合 */
-	@Getter
-	private DefaultCrawlerEvent event;
 
 	/** 爬虫执行者 */
 	@Getter
-	private DefaultExecutor executor;
+	@Setter
+	private Executor executor;
+
+	@Getter
+	@Setter
+	private Requester requester;
+
+	/** 爬虫事件对象集合 */
+	private DefaultCrawlerEvent event;
 
 	/** 爬虫参与者，用于处理爬虫Page个性化处理 */
-	@Getter
 	private ProxyCrawlerVisitor visitor;
 
 	/** 爬虫触手线程池 */
-	@Getter
-	private FetcherThreadPool fetcherPool;
+	private ProxyFetcherPool fetcherPool;
 
-	private void init(CrawlerConfig config) {
-		this.config = config;
-		this.id = this.config.getId();
-		this.fetcher = new Fetcher(this.id);
-		this.taskPool = new ProxyTaskPool(this.id);
-		this.event = new DefaultCrawlerEvent();
-		this.executor = new DefaultExecutor();
-		this.visitor = new ProxyCrawlerVisitor();
-		this.fetcherPool = new DefaultFetcherPool();
-		this.snapshot = new DefaultCrawlSnapshot();
-	}
 
 	/**
 	 * 创建一个默认的爬虫对象,需要setter注入其他属性
@@ -79,8 +79,9 @@ public class Crawler {
 	 *            爬虫配置文件对象
 	 */
 	public Crawler(CrawlerConfig config) {
-		this.init(config);
+		this.init(config, null);
 	}
+
 
 	/**
 	 * 创建一个默认的爬虫对象,需要setter注入其他属性
@@ -91,9 +92,9 @@ public class Crawler {
 	 *            爬虫任务池
 	 */
 	public Crawler(CrawlerConfig config, TaskPool taskPool) {
-		this.init(config);
-		this.taskPool.setPool(taskPool);
+		this.init(config, null);
 	}
+
 
 	/**
 	 * 爬虫整体任务完成时间毫秒
@@ -104,24 +105,47 @@ public class Crawler {
 		return this.fetcherPool.getRuntime();
 	}
 
+
 	/**
 	 * 爬虫整体任务完成，统计的总共爬取次数总量。
 	 * 
 	 * @return
 	 */
 	public long getTotalCount() {
-		return (long) this.fetcher.getCrawlDatumCount();
+		return (long) this.fetcher.getTotalCount();
 	}
 
-	/**
-	 * 注入爬虫配置信息对象
-	 * 
-	 * @param config
-	 */
-	public void setConfig(CrawlerConfig config) {
+
+	private void init(CrawlerConfig config, TaskPool taskPool) {
+
 		this.config = config;
-		this.id = config.getId();
+
+		this.taskPool = taskPool;
+
+		this.id = this.config.getId();
+
+		this.crawlerAttrInfo = new CrawlerAttrInfo().formObj(this.config);
+
+		this.fetcher = new Fetcher(this.id);
+
+		this.snapshot = null;
+
+		this.executor = new DefaultExecutor();
+
+		this.requester = null;
+
+		this.event = new DefaultCrawlerEvent();
+		this.event.setName(this.id);
+		this.event.addEvent(new ControlCrawlerEvent());
+
+		this.visitor = new ProxyCrawlerVisitor();
+
+		this.fetcherPool = new ProxyFetcherPool();
+
+		log.info("爬虫{}初始化完成。", this.id);
+
 	}
+
 
 	/**
 	 * 注入爬虫事件
@@ -132,6 +156,7 @@ public class Crawler {
 		this.event.addEvent(crawlerEvent);
 	}
 
+
 	/**
 	 * 注入爬虫事件集合
 	 * 
@@ -141,71 +166,63 @@ public class Crawler {
 		this.event.addEvent(list);
 	}
 
+
 	/**
-	 * 注入自定义爬虫触手线程池。
+	 * 注入爬虫触手线程池
 	 * 
 	 * @param fetcherPool
 	 */
 	public void setFetcherPool(FetcherThreadPool fetcherPool) {
-		this.fetcherPool = fetcherPool;
+		this.fetcherPool.setFetcherThreadPool(fetcherPool);
 	}
 
-	/**
-	 * 注入爬虫运行时快照对象
-	 * 
-	 * @param snapshot
-	 */
-	public void setSnapshot(CrawlSnapshot snapshot) {
-		this.snapshot = snapshot;
-	}
 
 	/**
-	 * 注入任务池，必要。
-	 * 
-	 * @param taskPool
-	 */
-	public void setTaskPool(TaskPool taskPool) {
-		this.taskPool.setPool(taskPool);
-	}
-
-	/**
-	 * 注入一个自定义的参与者。
+	 * 注入参与者
 	 * 
 	 * @param visitor
 	 */
 	public void setVisitor(CrawlerVisitor visitor) {
-		this.visitor.setVisitor(visitor);
+		this.visitor.setCrawlerVisitor(visitor);
 	}
+
 
 	/**
 	 * 开始运行爬虫
 	 */
 	public void start() {
+
+		log.info("爬虫{}开始运行，运行参数{}。", this.id, Tools.toStringByFieldLabel(this.crawlerAttrInfo));
+
+		this.event.crawlerBefore(this.config);
+
 		this.startFetcherPool();
+
+		this.event.crawlerAfer(this.fetcherPool.getRuntime(), this.fetcherPool.getCrawlDatumCount(),
+				this.fetcherPool.getActiveThreads());
+
+		log.info("爬虫{}全部任务完成并已停止，总共耗时{}毫秒，总共执行{}次采集，运行时平均并发线程数为{}条。", this.id, this.fetcherPool.getRuntime(),
+				this.fetcherPool.getCrawlDatumCount(), this.fetcherPool.getActiveThreads());
 	}
+
 
 	private void startFetcherPool() {
 
-		// 事件对象注入爬虫配置属性信息
-		this.event.setCrawlerAttrInfo(this.config);
-		this.event.addEvent(new ControlCrawlerEvent());
-
 		this.fetcher.setEvent(this.event);
 		this.fetcher.setExecutor(this.executor);
-		this.fetcher.setTaskPool(this.taskPool);
 		this.fetcher.setSnapshot(this.snapshot);
+		this.fetcher.setTaskPool(this.taskPool);
+		this.fetcher.setVisitor(this.visitor);
 
-		this.fetcherPool.setFetcher(this.fetcher);
 		this.fetcherPool.setInc(this.config.getIncthreads());
 		this.fetcherPool.setInitThread(this.config.getThreads());
 		this.fetcherPool.setMaxThread(this.config.getMaxthreads());
 		this.fetcherPool.setMinThread(this.config.getMinthreads());
+		this.fetcherPool.setFetcher(this.fetcher);
 
-		this.event.crawlerBefore(this.config);
+		Tools.setWareField(this, this.crawlerAttrInfo, this.taskPool, this.requester);
 
 		this.fetcherPool.execute();
-
-		this.event.crawlerAfer(this.fetcherPool.getRuntime(), this.fetcherPool.getCrawlDatumCount(), this.fetcherPool.getActiveThreads());
 
 	}
 
