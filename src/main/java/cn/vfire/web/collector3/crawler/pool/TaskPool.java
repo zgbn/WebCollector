@@ -30,6 +30,10 @@ public abstract class TaskPool implements Generator {
 	public abstract Generator getGenerator();
 
 
+	public TaskPool() {
+	}
+
+
 	public TaskPool(int size) {
 		this.size = size;
 	}

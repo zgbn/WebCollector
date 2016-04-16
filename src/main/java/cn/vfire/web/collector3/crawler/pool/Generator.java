@@ -1,7 +1,7 @@
 package cn.vfire.web.collector3.crawler.pool;
 
-import cn.vfire.web.collector.model.CrawlDatum;
 import cn.vfire.web.collector3.lang.CrawlerException;
+import cn.vfire.web.collector3.model.CrawlDatum;
 
 /**
  * 抓取任务生成器
