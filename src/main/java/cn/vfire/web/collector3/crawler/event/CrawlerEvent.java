@@ -22,7 +22,7 @@ public interface CrawlerEvent {
 	/**
 	 * 爬虫开始执行之前
 	 */
-	public void crawlerBefore(CrawlerConfig config);
+	public void crawlerBefore();
 
 
 	/**

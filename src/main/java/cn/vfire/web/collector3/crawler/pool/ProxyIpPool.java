@@ -1,4 +1,4 @@
-package cn.vfire.web.collector3.tools.pool;
+package cn.vfire.web.collector3.crawler.pool;
 
 import java.net.Proxy;
 

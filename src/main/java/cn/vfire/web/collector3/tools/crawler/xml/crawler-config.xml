@@ -55,7 +55,7 @@
 
 		<snapshot runtime="0" exceptioncount="0" count="0">
 			<snapshotinfo
-				class="cn.vfire.web.collector3.tools.crawler.snapshot.DefaultCatchSnapshotInfo" />
+				class="cn.vfire.web.collector3.crawler.snapshot.DefaultCatchSnapshotInfo" />
 		</snapshot>
 
 		<datamode id="datamode1" selecter="selecter">
@@ -67,7 +67,7 @@
 			<outdata ref="outdataid" />
 			<node key="name1" value="123456" />
 			<node key="data" selecter="selecter2">
-				<node key="key1" selecter="selecter.selecter2.selecter1" attr=""></node>
+				<node key="key1" selecter="selecter.selecter2.selecter1" attr="id" />
 				<node key="key2" selecter="selecter.selecter2.selecter2"></node>
 				<node key="key3" selecter="selecter.selecter2.selecter3"></node>
 				<list key="data" selecter="selecter.selecter2.selecter4">

@@ -9,11 +9,9 @@ import cn.vfire.web.collector3.crawler.executor.DefaultExecutor;
 import cn.vfire.web.collector3.crawler.executor.Executor;
 import cn.vfire.web.collector3.crawler.executor.Requester;
 import cn.vfire.web.collector3.crawler.pool.FetcherThreadPool;
-import cn.vfire.web.collector3.crawler.pool.ProxyFetcherPool;
 import cn.vfire.web.collector3.crawler.pool.TaskPool;
 import cn.vfire.web.collector3.crawler.snapshot.CrawlSnapshot;
 import cn.vfire.web.collector3.crawler.visitor.CrawlerVisitor;
-import cn.vfire.web.collector3.crawler.visitor.ProxyCrawlerVisitor;
 import cn.vfire.web.collector3.model.CrawlerAttrInfo;
 import cn.vfire.web.collector3.tools.Tools;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
@@ -55,7 +53,6 @@ public class Crawler {
 
 	/** 爬虫执行者 */
 	@Getter
-	@Setter
 	private Executor executor;
 
 	@Getter
@@ -66,10 +63,11 @@ public class Crawler {
 	private DefaultCrawlerEvent event;
 
 	/** 爬虫参与者，用于处理爬虫Page个性化处理 */
-	private ProxyCrawlerVisitor visitor;
+	private CrawlerVisitor visitor;
 
 	/** 爬虫触手线程池 */
-	private ProxyFetcherPool fetcherPool;
+	@Setter
+	private FetcherThreadPool fetcherPool;
 
 
 	/**
@@ -132,15 +130,19 @@ public class Crawler {
 
 		this.executor = new DefaultExecutor();
 
-		this.requester = null;
+		if (this.requester == null) {
+			if (this.executor instanceof DefaultExecutor) {
+				this.requester = (DefaultExecutor) this.executor;
+			}
+		}
 
 		this.event = new DefaultCrawlerEvent();
 		this.event.setName(this.id);
 		this.event.addEvent(new ControlCrawlerEvent());
 
-		this.visitor = new ProxyCrawlerVisitor();
+		this.visitor = null;
 
-		this.fetcherPool = new ProxyFetcherPool();
+		this.fetcherPool = null;
 
 		log.info("爬虫{}初始化完成。", this.id);
 
@@ -168,33 +170,13 @@ public class Crawler {
 
 
 	/**
-	 * 注入爬虫触手线程池
-	 * 
-	 * @param fetcherPool
-	 */
-	public void setFetcherPool(FetcherThreadPool fetcherPool) {
-		this.fetcherPool.setFetcherThreadPool(fetcherPool);
-	}
-
-
-	/**
-	 * 注入参与者
-	 * 
-	 * @param visitor
-	 */
-	public void setVisitor(CrawlerVisitor visitor) {
-		this.visitor.setCrawlerVisitor(visitor);
-	}
-
-
-	/**
 	 * 开始运行爬虫
 	 */
 	public void start() {
 
 		log.info("爬虫{}开始运行，运行参数{}。", this.id, Tools.toStringByFieldLabel(this.crawlerAttrInfo));
 
-		this.event.crawlerBefore(this.config);
+		this.event.crawlerBefore();
 
 		this.startFetcherPool();
 
@@ -220,7 +202,7 @@ public class Crawler {
 		this.fetcherPool.setMinThread(this.config.getMinthreads());
 		this.fetcherPool.setFetcher(this.fetcher);
 
-		Tools.setWareField(this, this.crawlerAttrInfo, this.taskPool, this.requester);
+		Tools.setWareField(this, this.config, this.taskPool, this.requester);
 
 		this.fetcherPool.execute();
 

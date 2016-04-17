@@ -13,6 +13,9 @@ import cn.vfire.web.collector3.model.CrawlDatum;
  */
 public interface Statement {
 
+	public void flush();
+
+
 	/**
 	 * 初始化写动作，通过传入lock对象，控制数据库动作事务关系。
 	 * 
@@ -112,7 +115,7 @@ public interface Statement {
 	 * @return
 	 * @throws CrawlerDBStatementException
 	 */
-	public <T> List<CrawlDatum> selectList(String regularKey, Comparator<T> comparator)
+	public List<CrawlDatum> selectList(String regularKey, Comparator<CrawlDatum> comparator)
 			throws CrawlerDBStatementException;
 
 
@@ -131,7 +134,7 @@ public interface Statement {
 	 * @return
 	 * @throws CrawlerDBStatementException
 	 */
-	public <T> List<CrawlDatum> selectList(String regularKey, int page, int size, Comparator<T> comparator)
+	public List<CrawlDatum> selectList(String regularKey, int page, int size, Comparator<CrawlDatum> comparator)
 			throws CrawlerDBStatementException;
 
 
@@ -150,5 +153,11 @@ public interface Statement {
 	 * @throws CrawlerDBStatementException
 	 */
 	public List<CrawlDatum> selectList(String regularKey, int page, int size) throws CrawlerDBStatementException;
+
+
+	/**
+	 * 关闭
+	 */
+	public void close();
 
 }

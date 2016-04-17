@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import lombok.Getter;
 import cn.vfire.web.collector3.crawler.Default;
 import cn.vfire.web.collector3.crawler.Fetcher.FetcherThread;
-import cn.vfire.web.collector3.tools.pool.FetcherThreadPool;
 
 public final class DefaultFetcherPool extends FetcherThreadPool implements Default {
 

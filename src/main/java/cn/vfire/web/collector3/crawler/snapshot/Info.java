@@ -1,7 +1,6 @@
 package cn.vfire.web.collector3.crawler.snapshot;
 
 import cn.vfire.web.collector3.annotation.Label;
-import cn.vfire.web.collector3.tools.Tools;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,11 +35,5 @@ class Info {
 	@Getter
 	@Label("初始化时间 ")
 	private long inittime = System.currentTimeMillis();
-
-
-	@Override
-	public String toString() {
-		return Tools.toStringByFieldLabel(this);
-	}
 
 }

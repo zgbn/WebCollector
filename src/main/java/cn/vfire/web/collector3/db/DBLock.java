@@ -1,5 +1,7 @@
 package cn.vfire.web.collector3.db;
 
+import cn.vfire.web.collector3.lang.CrawlerDBLockException;
+
 /**
  * 数据库操作锁管理接口
  * 
@@ -12,7 +14,7 @@ public interface DBLock {
 	 * 
 	 * @throws Exception
 	 */
-	public void lock() throws Exception;
+	public void lock() throws CrawlerDBLockException;
 
 
 	/**
@@ -21,7 +23,7 @@ public interface DBLock {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean isLocked() throws Exception;
+	public boolean isLocked() throws CrawlerDBLockException;
 
 
 	/**
@@ -29,5 +31,5 @@ public interface DBLock {
 	 * 
 	 * @throws Exception
 	 */
-	public void unlock() throws Exception;
+	public void unlock() throws CrawlerDBLockException;
 }

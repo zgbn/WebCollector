@@ -210,8 +210,8 @@ public class Fetcher {
 	}
 
 
-	public long getTotalCount() {
-		return (long) this.taskPool.getTotalGenerate();
+	public int getTotalCount() {
+		return this.taskPool.getTotalGenerate();
 	}
 
 

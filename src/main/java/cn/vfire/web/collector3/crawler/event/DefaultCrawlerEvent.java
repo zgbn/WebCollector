@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import lombok.extern.slf4j.Slf4j;
 import cn.vfire.web.collector3.crawler.Default;
 import cn.vfire.web.collector3.crawler.executor.Requester;
 import cn.vfire.web.collector3.crawler.pool.TaskPool;
@@ -15,8 +14,8 @@ import cn.vfire.web.collector3.crawler.ware.TaskPoolWare;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.CrawlerAttrInfo;
 import cn.vfire.web.collector3.model.Page;
-import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
 import cn.vfire.web.collector3.tools.crawler.element.ProxyIP;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 监听事件的默认实现。 <br />
@@ -69,18 +68,18 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void crawlerAfer(long runtime, int crawlDatumCount, int activeThreads) {
 		log.debug("爬虫Crawler:{}的crawlerAfer事件触发。", name);
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.crawlerAfer(runtime, crawlDatumCount, activeThreads);
 		}
 	}
 
 
 	@Override
-	public void crawlerBefore(CrawlerConfig config) {
+	public void crawlerBefore() {
 		log.debug("爬虫Crawler:{}的crawlerBefore事件触发。", name);
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
-			event.crawlerBefore(config);
+			this.setCrawlerAttrInfo(event);
+			event.crawlerBefore();
 		}
 	}
 
@@ -89,7 +88,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void facherAfer(Page page, TaskPool taskPool) {
 		log.debug("爬虫Crawler:{}触手Facher:{}的facherAfer事件触发。", name, Thread.currentThread().getName());
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.facherAfer(page, taskPool);
 		}
 	}
@@ -99,7 +98,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void facherBefore(CrawlDatum crawlDatum, TaskPool taskPool) {
 		log.debug("爬虫Crawler:{}触手Facher:{}的facherBefore事件触发。", name, Thread.currentThread().getName());
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.facherBefore(crawlDatum, taskPool);
 		}
 	}
@@ -109,7 +108,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void facherEnd(int serialNumber, int exeCount, TaskPool taskPool) {
 		log.debug("爬虫Crawler:{}触手Facher:{}的facherEnd事件触发。", name, Thread.currentThread().getName());
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.facherEnd(serialNumber, exeCount, taskPool);
 		}
 	}
@@ -119,7 +118,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void facherExceptin(CrawlDatum crawlDatum, TaskPool taskPool, Exception e) {
 		log.debug("爬虫Crawler:{}触手Facher:{}的facherExceptin事件触发。", name, Thread.currentThread().getName());
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.facherExceptin(crawlDatum, taskPool, e);
 		}
 	}
@@ -129,7 +128,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	public void facherStart(int serialNumber, TaskPool taskPool) {
 		log.debug("爬虫Crawler:{}触手Facher:{}的facherStart事件触发。", name, Thread.currentThread().getName());
 		for (CrawlerEvent event : this.list) {
-			this.setCrawlerAttrInfo(event, crawlerAttrInfo);
+			this.setCrawlerAttrInfo(event);
 			event.facherStart(serialNumber, taskPool);
 		}
 	}
@@ -147,7 +146,7 @@ public class DefaultCrawlerEvent implements CrawlerEvent, CrawlerInfoWare, TaskP
 	}
 
 
-	public void setCrawlerAttrInfo(CrawlerEvent event, CrawlerAttrInfo crawlerAttrInfo) {
+	public void setCrawlerAttrInfo(CrawlerEvent event) {
 		if (event instanceof CrawlerInfoWare) {
 			CrawlerInfoWare _event = (CrawlerInfoWare) event;
 			_event.setCrawlerAttrInfo(this.crawlerAttrInfo);

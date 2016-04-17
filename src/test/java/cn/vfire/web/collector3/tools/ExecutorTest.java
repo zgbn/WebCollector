@@ -3,9 +3,9 @@ package cn.vfire.web.collector3.tools;
 import org.junit.Test;
 
 import cn.vfire.web.collector3.crawler.executor.DefaultExecutor;
+import cn.vfire.web.collector3.crawler.executor.Executor;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.Page;
-import cn.vfire.web.collector3.tools.executor.Executor;
 
 public class ExecutorTest {
 

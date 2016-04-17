@@ -4,9 +4,9 @@ import lombok.Getter;
 
 import org.w3c.dom.Node;
 
+import cn.vfire.web.collector3.crawler.event.CrawlerEvent;
 import cn.vfire.web.collector3.lang.CrawlerConfigXmlException;
 import cn.vfire.web.collector3.tools.crawler.Element;
-import cn.vfire.web.collector3.tools.crawler.event.CrawlerEvent;
 
 import com.google.gson.annotations.Expose;
 

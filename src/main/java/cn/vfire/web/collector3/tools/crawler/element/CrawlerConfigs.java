@@ -19,7 +19,7 @@ import cn.vfire.web.collector3.tools.crawler.Element;
  * @author ChenGang
  *
  */
-public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializable {
+public class CrawlerConfigs extends Element<CrawlerConfigs> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,24 +41,29 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 	@Expose
 	private List<CrawlerConfig> crawlerconfig = new ArrayList<CrawlerConfig>();
 
+
 	@Override
 	public String[] attributes() {
 		return new String[] {};
 	}
+
 
 	@Override
 	public String[] childNames() {
 		return new String[] { "formatclass", "proxyip", "outfile", "outdata", "crawlerconfig", "event" };
 	}
 
+
 	@Override
 	public Map<String, Element<?>> getCacheElementMap() {
 		return Collections.unmodifiableMap(super.getCacheElementMap());
 	}
 
+
 	public List<CrawlerConfig> getCrawlerconfig() {
 		return Collections.unmodifiableList(crawlerconfig);
 	}
+
 
 	/**
 	 * 得到所有Crawler任务的id。
@@ -68,39 +73,48 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 		return Collections.unmodifiableList(super.getCrawlerIds());
 	}
 
+
 	public List<FormatClass> getFormatclass() {
 		return Collections.unmodifiableList(formatclass);
 	}
+
 
 	@Override
 	public String getId() {
 		return null;
 	}
 
+
 	public List<OutData> getOutdata() {
 		return Collections.unmodifiableList(outdata);
 	}
+
 
 	public List<OutFile> getOutfile() {
 		return Collections.unmodifiableList(outfile);
 	}
 
+
 	public List<ProxyIP> getProxyip() {
 		return Collections.unmodifiableList(proxyip);
 	}
+
 
 	public void setCrawlerconfig(CrawlerConfig crawlerconfig) {
 		this.crawlerconfig.add(crawlerconfig);
 
 	}
 
+
 	public void setEvent(Event event) {
 		this.event.add(event);
 	}
 
+
 	@Override
 	protected void setFieldByAttr(String fname, String fvalue) {
 	}
+
 
 	@Override
 	protected void setFieldByNode(String fname, Node childNode) throws CrawlerConfigXmlException {
@@ -109,24 +123,30 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 			FormatClass fieldElement = new FormatClass();
 			fieldElement.parse(childNode);
 			this.setFormatclass(fieldElement);
-		} else if (PROXYIP.equals(fname)) {
+		}
+		else if (PROXYIP.equals(fname)) {
 			ProxyIP fieldElement = new ProxyIP();
 			fieldElement.parse(childNode);
 			this.setProxyip(fieldElement);
-		} else if (OUTDATA.equals(fname)) {
+		}
+		else if (OUTDATA.equals(fname)) {
 			OutData fieldElement = new OutData();
 			fieldElement.parse(childNode);
 			this.setOutdata(fieldElement);
-		} else if (OUTFILE.equals(fname)) {
+		}
+		else if (OUTFILE.equals(fname)) {
 			OutFile fieldElement = new OutFile();
 			fieldElement.parse(childNode);
 			this.setOutfile(fieldElement);
-		} else if (CRAWLERCONFIG.equals(fname)) {
+		}
+		else if (CRAWLERCONFIG.equals(fname)) {
 			childNode = this.valiChildNode(fname, childNode);
 			CrawlerConfig fieldElement = new CrawlerConfig();
 			fieldElement.parse(childNode);
+			fieldElement.setCrawlerConfigs(this);
 			this.setCrawlerconfig(fieldElement);
-		} else if (EVENT.equals(fname)) {
+		}
+		else if (EVENT.equals(fname)) {
 			Event event = new Event();
 			event.parse(childNode);
 			this.setEvent(event);
@@ -134,17 +154,21 @@ public class Crawlerconfigs extends Element<Crawlerconfigs> implements Serializa
 
 	}
 
+
 	public void setFormatclass(FormatClass formatclass) {
 		this.formatclass.add(formatclass);
 	}
+
 
 	public void setOutdata(OutData outdata) {
 		this.outdata.add(outdata);
 	}
 
+
 	public void setOutfile(OutFile outfile) {
 		this.outfile.add(outfile);
 	}
+
 
 	public void setProxyip(ProxyIP proxyip) {
 		this.proxyip.add(proxyip);

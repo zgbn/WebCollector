@@ -18,7 +18,7 @@ import cn.vfire.common.utils.json.DefaultJson;
 import cn.vfire.web.collector3.lang.CrawlerConfigXmlException;
 import cn.vfire.web.collector3.lang.CrawlerXmlFile;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
-import cn.vfire.web.collector3.tools.crawler.element.Crawlerconfigs;
+import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfigs;
 
 public final class CrawlerXmlFactory {
 
@@ -30,7 +30,7 @@ public final class CrawlerXmlFactory {
 
 	private DefaultJson jsonTools = new DefaultJson();
 
-	private Crawlerconfigs crawlerConfigs;
+	private CrawlerConfigs crawlerConfigs;
 
 
 	synchronized public static CrawlerXmlFactory getCrawlerXmlTool() throws ParserConfigurationException {
@@ -187,13 +187,13 @@ public final class CrawlerXmlFactory {
 	 * @param xmlfile
 	 * @throws Exception
 	 */
-	private Crawlerconfigs parse(CrawlerXmlFile xmlfile) throws Exception {
+	private CrawlerConfigs parse(CrawlerXmlFile xmlfile) throws Exception {
 
 		Document document = this.docBuiler.parse(xmlfile.getTmpCrawlerConfigXml());
 
 		Node rootNode = document.getFirstChild();
 
-		this.crawlerConfigs = new Crawlerconfigs();
+		this.crawlerConfigs = new CrawlerConfigs();
 
 		this.crawlerConfigs.parse(rootNode);
 

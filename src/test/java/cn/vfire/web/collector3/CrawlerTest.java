@@ -5,6 +5,8 @@ import java.io.File;
 import javax.xml.parsers.ParserConfigurationException;
 
 import cn.vfire.web.collector3.crawler.Crawler;
+import cn.vfire.web.collector3.crawler.pool.DefaultFetcherPool;
+import cn.vfire.web.collector3.crawler.pool.DefaultTaskPool;
 import cn.vfire.web.collector3.tools.crawler.CrawlerXmlFactory;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
 
@@ -18,6 +20,9 @@ public class CrawlerTest {
 
 		Crawler crawler = new Crawler(config);
 
+		crawler.setFetcherPool(new DefaultFetcherPool());
+		crawler.setTaskPool(new DefaultTaskPool());
+
 		crawler.start();
 
 		System.out.println("========结束:" + crawler.getRuntime() + "ms 共完成" + crawler.getTotalCount() + "次任务。=======");
@@ -30,7 +35,8 @@ public class CrawlerTest {
 		try {
 			CrawlerXmlFactory xmlTool = CrawlerXmlFactory.getCrawlerXmlTool();
 
-			String filePath = ClassLoader.getSystemResource("cn/vfire/web/collector3/tools/crawler/xml/crawler-config.xml").getFile();
+			String filePath = ClassLoader
+					.getSystemResource("cn/vfire/web/collector3/tools/crawler/xml/crawler-config.xml").getFile();
 
 			File xml = new File(filePath);
 
@@ -39,9 +45,11 @@ public class CrawlerTest {
 			CrawlerConfig config = xmlTool.getCrawler(name);
 
 			return config;
-		} catch (ParserConfigurationException e) {
+		}
+		catch (ParserConfigurationException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 

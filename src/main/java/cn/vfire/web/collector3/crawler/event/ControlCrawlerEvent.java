@@ -1,13 +1,12 @@
 package cn.vfire.web.collector3.crawler.event;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import cn.vfire.web.collector3.crawler.pool.TaskPool;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.CrawlerAttrInfo;
 import cn.vfire.web.collector3.model.Page;
 import cn.vfire.web.collector3.tools.Tools;
-import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * XXX 需要实现接口方法
@@ -31,9 +30,8 @@ public class ControlCrawlerEvent implements CrawlerEvent {
 
 
 	@Override
-	public void crawlerBefore(CrawlerConfig config) {
-		log.info("爬虫{}加载任务{}完成，并开始执行。任务描述信息为{}。", config.getId(), config.getName(),
-				Tools.toStringByFieldLabel(this.crawlerAttrInfo));
+	public void crawlerBefore() {
+		log.info("爬虫{}加载任务完成，并开始执行。任务描述信息为{}。", this.name, Tools.toStringByFieldLabel(this.crawlerAttrInfo));
 	}
 
 
