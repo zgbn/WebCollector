@@ -17,8 +17,7 @@ public class CrawlerXmlFactoryTest {
 
 		try {
 			CrawlerXmlFactory xmlTool = CrawlerXmlFactory.getCrawlerXmlTool();
-			String filePath = ClassLoader
-					.getSystemResource("cn/vfire/web/collector/tools/crawler/xml/crawler-config.xml").getFile();
+			String filePath = ClassLoader.getSystemResource("cn/vfire/web/collector3/tools/crawler/xml/crawler-config.xml").getFile();
 
 			log.info("解析文件物理位置{}。", filePath);
 
@@ -32,19 +31,19 @@ public class CrawlerXmlFactoryTest {
 
 			log.info("Crawler任务配置详细描述:{}", xmlTool.getCrawlerForJson("crawlerJob"));
 
-//			log.info("Crawler任务配置Datamode描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode());
-//
-//			log.info("Crawler任务配置Datamode.ref描述:{}", xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getRef());
-//
-//			log.info("Crawler任务配置Datamode.Outdata描述:{}",
-//					xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getOutdata());
-//			log.info("Crawler任务配置Datamode.ref描述:{}",
-//					xmlTool.getCrawler("crawlerJob").getDatamode().get(1).getOutdata());
-		}
-		catch (ParserConfigurationException e) {
+			// log.info("Crawler任务配置Datamode描述:{}",
+			// xmlTool.getCrawler("crawlerJob").getDatamode());
+			//
+			// log.info("Crawler任务配置Datamode.ref描述:{}",
+			// xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getRef());
+			//
+			// log.info("Crawler任务配置Datamode.Outdata描述:{}",
+			// xmlTool.getCrawler("crawlerJob").getDatamode().get(0).getOutdata());
+			// log.info("Crawler任务配置Datamode.ref描述:{}",
+			// xmlTool.getCrawler("crawlerJob").getDatamode().get(1).getOutdata());
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

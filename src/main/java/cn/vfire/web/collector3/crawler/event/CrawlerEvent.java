@@ -1,9 +1,8 @@
 package cn.vfire.web.collector3.crawler.event;
 
-import cn.vfire.web.collector3.crawler.pool.TaskPool;
+import cn.vfire.web.collector3.lang.FatchStopException;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.Page;
-import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
 
 /**
  * 爬虫执行任务过程中触发事件。
@@ -18,12 +17,10 @@ public interface CrawlerEvent {
 	 */
 	public void crawlerAfer(long runtime, int crawlDatumCount, int activeThreads);
 
-
 	/**
 	 * 爬虫开始执行之前
 	 */
 	public void crawlerBefore();
-
 
 	/**
 	 * 采集任务完成之后
@@ -36,8 +33,7 @@ public interface CrawlerEvent {
 	 *            同一个crawlDatum抓取次数
 	 * @return false则触手将停止执行任务
 	 */
-	public void facherAfer(Page page, TaskPool taskPool);
-
+	public void facherAfer(Page page) throws FatchStopException;
 
 	/**
 	 * 采集数据开始之前
@@ -50,8 +46,7 @@ public interface CrawlerEvent {
 	 *            同一个crawlDatum抓取次数
 	 * @return false则触手将停止执行任务
 	 */
-	public void facherBefore(CrawlDatum crawlDatum, TaskPool taskPool);
-
+	public void facherBefore(CrawlDatum crawlDatum) throws FatchStopException;
 
 	/**
 	 * 全部结束时触发的事件
@@ -63,8 +58,7 @@ public interface CrawlerEvent {
 	 * @param taskPool
 	 *            任务池
 	 */
-	public void facherEnd(int serialNumber, int exeCount, TaskPool taskPool);
-
+	public void facherEnd() throws FatchStopException;
 
 	/**
 	 * 发生异常
@@ -79,8 +73,7 @@ public interface CrawlerEvent {
 	 *            发生异常次数
 	 * @return false则触手将停止执行任务
 	 */
-	public void facherExceptin(CrawlDatum crawlDatum, TaskPool taskPool, Exception e);
-
+	public void facherExceptin(CrawlDatum crawlDatum, Exception e) throws FatchStopException;
 
 	/**
 	 * 开始时触发的事件
@@ -91,8 +84,7 @@ public interface CrawlerEvent {
 	 *            任务池
 	 * @return false则触手将停止执行任务
 	 */
-	public void facherStart(int serialNumber, TaskPool taskPool);
-
+	public void facherStart() throws FatchStopException;
 
 	/**
 	 * 顺序

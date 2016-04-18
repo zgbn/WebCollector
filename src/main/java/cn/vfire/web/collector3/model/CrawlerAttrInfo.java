@@ -37,12 +37,6 @@ public class CrawlerAttrInfo {
 	@Label("页面深度")
 	private int depth = 1;
 
-	/** 爬虫执行时的测试最佳线程数的递增数。 */
-	@Getter
-	@Setter
-	@Label("每次递增线程数")
-	private int incThreads = 5;
-
 	/** 爬虫是否使用代理服务器IP */
 	@Getter
 	@Setter
@@ -69,7 +63,7 @@ public class CrawlerAttrInfo {
 	@Getter
 	@Setter
 	@Label("最小并发线程数")
-	private int minhreads = 5;
+	private int keepalivetime = 5;
 
 	/** 规定的当爬虫访问URL失败时候，在当前线程中重新访问的次数。每一次访问会默认随机暂停3-9秒钟。 */
 	@Getter
@@ -97,10 +91,9 @@ public class CrawlerAttrInfo {
 		this.description = config.getDescription();
 		this.seedurl = config.getSeedurl();
 		this.depth = config.getDepth();
-		this.incThreads = config.getIncthreads();
 		this.maxExecuteCount = config.getMaxexecutecount();
 		this.maxhreads = config.getMaxthreads();
-		this.minhreads = config.getMinthreads();
+		this.keepalivetime = config.getKeepalivetime();
 		this.isProxy = config.isIsproxy();
 		this.retry = config.getRetry();
 		this.threads = config.getThreads();

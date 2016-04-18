@@ -11,6 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -20,6 +22,7 @@ import cn.vfire.web.collector3.lang.CrawlerXmlFile;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfig;
 import cn.vfire.web.collector3.tools.crawler.element.CrawlerConfigs;
 
+@Slf4j
 public final class CrawlerXmlFactory {
 
 	private static CrawlerXmlFactory XmlTool;
@@ -32,14 +35,12 @@ public final class CrawlerXmlFactory {
 
 	private CrawlerConfigs crawlerConfigs;
 
-
 	synchronized public static CrawlerXmlFactory getCrawlerXmlTool() throws ParserConfigurationException {
 		if (XmlTool == null) {
 			XmlTool = new CrawlerXmlFactory();
 		}
 		return XmlTool;
 	}
-
 
 	synchronized public static CrawlerXmlFactory getCrawlerXmlTool(File... crawlerConfigXml) throws Exception {
 		if (XmlTool == null) {
@@ -49,7 +50,6 @@ public final class CrawlerXmlFactory {
 		return XmlTool;
 	}
 
-
 	synchronized public static CrawlerXmlFactory getCrawlerXmlTool(String xmlFilePath) throws Exception {
 		File[] files = loadCrawlerXmlFile(xmlFilePath);
 		if (XmlTool == null) {
@@ -58,7 +58,6 @@ public final class CrawlerXmlFactory {
 		}
 		return XmlTool;
 	}
-
 
 	private static File[] loadCrawlerXmlFile(String xmlPath) throws CrawlerConfigXmlException {
 
@@ -78,8 +77,7 @@ public final class CrawlerXmlFactory {
 				if (flag) {
 					return new File[] { xmlFile };
 				}
-			}
-			else if (xmlFile.isDirectory()) {
+			} else if (xmlFile.isDirectory()) {
 				File[] list = xmlFile.listFiles(new FileFilter() {
 
 					@Override
@@ -96,15 +94,12 @@ public final class CrawlerXmlFactory {
 			}
 		}
 
-		throw new CrawlerConfigXmlException("在xmlPath中没有找到Crawler的任务配置文件,该配置文件名必须以%s开头的xml文件。xmlPath:%s", Prefix,
-				xmlPath);
+		throw new CrawlerConfigXmlException("在xmlPath中没有找到Crawler的任务配置文件,该配置文件名必须以%s开头的xml文件。xmlPath:%s", Prefix, xmlPath);
 	}
-
 
 	private CrawlerXmlFactory() throws ParserConfigurationException {
 		this.docBuiler = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 	}
-
 
 	/**
 	 * 始解析CrawlerXml配置文件，支持多个文件。所有Crawler任务的id。
@@ -125,8 +120,7 @@ public final class CrawlerXmlFactory {
 
 				this.parse(xmlfile);
 
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 
 				throw new CrawlerConfigXmlException(e, "处理文件内容大小写发生异常。File：%s", crawlerConfigXml[i].getPath());
 
@@ -139,11 +133,10 @@ public final class CrawlerXmlFactory {
 		return this.crawlerConfigs.getCrawlerIds();
 	}
 
-
 	public void setElementRefs() {
 
 		Set<String> keySey = this.crawlerConfigs.getCacheElementMap().keySet();
-		
+
 		for (String key : keySey) {
 
 			Element<?> element = this.crawlerConfigs.getCacheElementMap().get(key);
@@ -152,12 +145,15 @@ public final class CrawlerXmlFactory {
 
 				Element<?> refElement = this.crawlerConfigs.getCacheElementMap().get(ref);
 
-				element.setRefElement(refElement);
+				if (refElement != null) {
+					element.setRefElement(refElement);
+				} else {
+					log.warn("元素{}的引用属性ref={}在上下文中没有找到ID={}的被引用的元素对象。", element.getTagname(), ref, ref);
+				}
 
 			}
 		}
 	}
-
 
 	/**
 	 * Crawler任务配置详细描述。数据格式为json。
@@ -173,7 +169,6 @@ public final class CrawlerXmlFactory {
 		return null;
 	}
 
-
 	public CrawlerConfig getCrawler(String crawlerId) {
 		Element<?> element = this.crawlerConfigs.getCacheElementMap().get(crawlerId);
 		if (element instanceof CrawlerConfig) {
@@ -181,7 +176,6 @@ public final class CrawlerXmlFactory {
 		}
 		return null;
 	}
-
 
 	/**
 	 * @param xmlfile
@@ -201,7 +195,6 @@ public final class CrawlerXmlFactory {
 
 	}
 
-
 	/**
 	 * Crawler任务id，所有任务的id。
 	 * 
@@ -211,7 +204,6 @@ public final class CrawlerXmlFactory {
 		List<String> list = this.crawlerConfigs.getCrawlerIds();
 		return list;
 	}
-
 
 	public void setJsonTools(Object json) {
 		this.jsonTools.setJson(json);

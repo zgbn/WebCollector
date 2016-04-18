@@ -23,11 +23,9 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 
 	private static final long serialVersionUID = 1L;
 
-	private static String[] childNames = new String[] { "name", "description", "seedurl", "regexrules", "unregexrules",
-			"datamode", "event", "snapshot" };
+	private static String[] childNames = new String[] { "name", "description", "seedurl", "regexrules", "unregexrules", "datamode", "event", "snapshot" };
 
-	private static String[] attibutes = new String[] { "id", "depth", "incthreads", "isproxy", "maxexecutecount",
-			"maxthreads", "minthreads", "retry", "threads", "topnum" };
+	private static String[] attibutes = new String[] { "id", "depth", "isproxy", "maxexecutecount", "maxthreads", "keepalivetime", "retry", "threads", "topnum" };
 
 	@Setter
 	@Getter
@@ -43,10 +41,6 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 
 	@Getter
 	@Expose
-	private int incthreads = 5;
-
-	@Getter
-	@Expose
 	private boolean isproxy = false;
 
 	@Getter
@@ -59,7 +53,7 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 
 	@Getter
 	@Expose
-	private int minthreads = 5;
+	private int keepalivetime = 5;
 
 	@Getter
 	@Expose
@@ -105,18 +99,15 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 	@Expose
 	private List<DataMode> datamode = new ArrayList<DataMode>();
 
-
 	@Override
 	public String[] childNames() {
 		return childNames;
 	}
 
-
 	@Override
 	public String[] attributes() {
 		return attibutes;
 	}
-
 
 	@Override
 	protected void setFieldByNode(String fname, Node childNode) throws CrawlerConfigXmlException {
@@ -126,39 +117,31 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 
 		if (NAME.equals(fname)) {
 			this.name = value;
-		}
-		else if (DESCRIPTION.equals(fname)) {
+		} else if (DESCRIPTION.equals(fname)) {
 			this.description = value;
-		}
-		else if (SEEDURL.equals(fname)) {
+		} else if (SEEDURL.equals(fname)) {
 			this.seedurl = value;
-		}
-		else if (REGEXRULES.equals(fname)) {
+		} else if (REGEXRULES.equals(fname)) {
 			this.regexrules = new RegexRules();
 			this.regexrules.parse(childNode);
-		}
-		else if (UNREGEXRULES.equals(fname)) {
+		} else if (UNREGEXRULES.equals(fname)) {
 			this.unregexrules = new UnregexRules();
 			this.unregexrules.parse(childNode);
-		}
-		else if (DATAMODE.equals(fname)) {
+		} else if (DATAMODE.equals(fname)) {
 			DataMode dataMode = new DataMode();
 			dataMode.parse(childNode);
 			this.setDatamode(dataMode);
-		}
-		else if (EVENT.equals(fname)) {
+		} else if (EVENT.equals(fname)) {
 			String ref = this.valiChildNodeAttr(fname, childNode, REF);
 			if (ref != null) {
 				this.setRef(ref);
 			}
-		}
-		else if (SNAPSHOT.equals(fname)) {
+		} else if (SNAPSHOT.equals(fname)) {
 			Snapshot snapshot = new Snapshot();
 			snapshot.parse(childNode);
 			this.setSnapshot(snapshot);
 		}
 	}
-
 
 	@Override
 	protected void setFieldByAttr(String fname, String fvalue) throws CrawlerConfigXmlException {
@@ -170,36 +153,24 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 		try {
 			if (DEPTH.equals(fname)) {
 				this.depth = Integer.parseInt(fvalue);
-			}
-			else if (INCTHREADS.equals(fname)) {
-				this.incthreads = Integer.parseInt(fvalue);
-			}
-			else if (ISPROXY.equals(fname)) {
+			} else if (ISPROXY.equals(fname)) {
 				this.isproxy = Boolean.parseBoolean(fvalue);
-			}
-			else if (MAXEXECUTECOUNT.equals(fname)) {
+			} else if (MAXEXECUTECOUNT.equals(fname)) {
 				this.maxexecutecount = Integer.parseInt(fvalue);
-			}
-			else if (MAXTHREADS.equals(fname)) {
+			} else if (MAXTHREADS.equals(fname)) {
 				this.maxthreads = Integer.parseInt(fvalue);
-			}
-			else if (MINTHREADS.equals(fname)) {
-				this.minthreads = Integer.parseInt(fvalue);
-			}
-			else if (RETRY.equals(fname)) {
+			} else if (KEEPALIVETIME.equals(fname)) {
+				this.keepalivetime = Integer.parseInt(fvalue);
+			} else if (RETRY.equals(fname)) {
 				this.retry = Integer.parseInt(fvalue);
-			}
-			else if (THREADS.equals(fname)) {
+			} else if (THREADS.equals(fname)) {
 				this.threads = Integer.parseInt(fvalue);
-			}
-			else if (TOPNUM.equals(fname)) {
+			} else if (TOPNUM.equals(fname)) {
 				this.topnum = Integer.parseInt(fvalue);
 			}
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 		}
 	}
-
 
 	/**
 	 * Crawler任务配置Datamode描述
@@ -210,16 +181,13 @@ public class CrawlerConfig extends Element<CrawlerConfig> {
 		return Collections.unmodifiableList(datamode);
 	}
 
-
 	public void setDatamode(DataMode datamode) {
 		this.datamode.add(datamode);
 	}
 
-
 	public List<Event> getEvent() {
 		return Collections.unmodifiableList(event);
 	}
-
 
 	public void setEvent(Event event) {
 		this.event.add(event);

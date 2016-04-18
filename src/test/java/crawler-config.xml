@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<crawlerconfigs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlschema.vfire.cn/xsd/crawlerconfigs"
+	xsi:schemaLocation="http://xmlschema.vfire.cn/xsd/crawlerconfigs http://xmlschema.vfire.cn/xsd/crawlerconfigs/crawler-config-3.0.xsd">
+
+	<!-- 0个 多个 -->
+	<formatclass id="DemoDataFormat" class="cn.vfire.web.collector3.tools.crawler.format.impl.DefaultDataFormat" />
+
+
+	<!-- 0-1个 -->
+	<proxyip id="proxyipid" class="cn.vfire.web.collector3.tools.crawler.proxyip.impl.DefaultProxyIpPool" />
+
+
+	<!-- 0个 多个 -->
+	<outfile id="outfile" zip="Gzip">
+		<prefix>suffix</prefix>
+		<suffix>.${sn}.txt</suffix>
+		<name>${selecter.selecter2.selecter1}</name>
+		<path>/${selecter.selecter2.selecter1}/</path>
+	</outfile>
+
+	<!-- 0-多个 -->
+	<outdata id="outdataid">
+		<formatclass ref="DemoDataFormat" />
+		<outfile ref="outfile" />
+	</outdata>
+
+	<!-- 1个 -->
+	<crawlerconfig id="crawlerJob" depth="2" isproxy="false" keepalivetime="5"
+		maxexecutecount="5" maxthreads="50" retry="1" threads="5" topnum="-1">
+
+		<name>采集任务</name>
+		<description>采集描述</description>
+		<seedurl>http://www.biquge.la/book/5313/</seedurl>
+		<regexrules>
+			<regex>http://www.biquge.la/book/[0-9]+/[0-9]+.html</regex>
+		</regexrules>
+
+
+		<snapshot runtime="0" exceptioncount="0" count="0">
+			<snapshotinfo class="cn.vfire.web.collector3.crawler.snapshot.DefaultCatchSnapshotInfo" />
+		</snapshot>
+
+		<datamode id="novel">
+			<urls>
+				<regex>^http://www.biquge.la/book/[0-9]+/[0-9]+.html$</regex>
+			</urls>
+			<outdata ref="outdataid" />
+			<node key="chapter">
+				<node key="title" selecter="#wrapper > div.content_read > div > div.bookname > h1"></node>
+				<node key="content" selecter="#content" />
+			</node>
+		</datamode>
+
+		<datamode id="catalog">
+			<urls>
+				<regex>^http://www.biquge.la/book/[0-9]+(|/)$</regex>
+			</urls>
+			<outdata ref="outdataid" />
+			<list key="data" label="目录" value="" selecter="#list > dl > dd > a">
+			</list>
+		</datamode>
+
+	</crawlerconfig>
+
+
+
+
+
+
+
+</crawlerconfigs>

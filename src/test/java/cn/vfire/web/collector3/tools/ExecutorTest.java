@@ -2,7 +2,7 @@ package cn.vfire.web.collector3.tools;
 
 import org.junit.Test;
 
-import cn.vfire.web.collector3.crawler.executor.DefaultExecutor;
+import cn.vfire.web.collector3.crawler.defaults.DefaultExecutor;
 import cn.vfire.web.collector3.crawler.executor.Executor;
 import cn.vfire.web.collector3.model.CrawlDatum;
 import cn.vfire.web.collector3.model.Page;
@@ -11,7 +11,6 @@ public class ExecutorTest {
 
 	private Executor executor = new DefaultExecutor();
 
-
 	@Test
 	public void testExecute() {
 
@@ -19,17 +18,16 @@ public class ExecutorTest {
 
 		try {
 
-			CrawlDatum crawlDatum = new CrawlDatum(url);
+			CrawlDatum crawlDatum = new CrawlDatum(url, 1);
 
 			Page page = executor.execute(crawlDatum);
 
 			System.out.println(page.getHtml());
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	@Test
 	public void testExecuteProxyIp() {
@@ -42,13 +40,13 @@ public class ExecutorTest {
 
 		try {
 
-			CrawlDatum crawlDatum = new CrawlDatum(url, proxyIp, proxyPort);
+			CrawlDatum crawlDatum = new CrawlDatum(url, proxyIp, proxyPort, 1);
 
 			Page page = executor.execute(crawlDatum);
 
 			System.out.println(page.getHtml());
-		}
-		catch (Exception e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

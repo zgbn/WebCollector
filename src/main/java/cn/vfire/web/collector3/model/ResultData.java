@@ -7,7 +7,6 @@ import java.util.Map;
 
 import cn.vfire.web.collector3.tools.crawler.element.NList;
 import cn.vfire.web.collector3.tools.crawler.element.NNode;
-import lombok.Getter;
 
 public class ResultData {
 
@@ -28,7 +27,7 @@ public class ResultData {
 
 		if (this.rlists.isEmpty() == false) {
 			for (RList rlist : this.rlists) {
-				map.put(rlist.getKey(), rlist);
+				map.put(rlist.getKey(), rlist.getValue());
 			}
 		}
 

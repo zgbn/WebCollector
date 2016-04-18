@@ -1,19 +1,27 @@
 package cn.vfire.web.collector3.crawler;
 
+import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import cn.vfire.web.collector3.crawler.event.CrawlerEvent;
-import cn.vfire.web.collector3.crawler.executor.Executor;
-import cn.vfire.web.collector3.crawler.pool.Generator;
-import cn.vfire.web.collector3.crawler.pool.TaskPool;
-import cn.vfire.web.collector3.crawler.snapshot.CrawlSnapshot;
-import cn.vfire.web.collector3.crawler.visitor.CrawlerVisitor;
-import cn.vfire.web.collector3.model.CrawlDatum;
-import cn.vfire.web.collector3.model.Page;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import cn.vfire.web.collector3.crawldb.DBManager;
+import cn.vfire.web.collector3.crawldb.Generator;
+import cn.vfire.web.collector3.crawler.defaults.DefaultCrawlerEvent;
+import cn.vfire.web.collector3.crawler.defaults.DefaultCrawlerVisitor;
+import cn.vfire.web.collector3.crawler.defaults.DefaultExecutor;
+import cn.vfire.web.collector3.crawler.event.CrawlerEvent;
+import cn.vfire.web.collector3.crawler.executor.Executor;
+import cn.vfire.web.collector3.crawler.snapshot.CrawlSnapshot;
+import cn.vfire.web.collector3.lang.CrawlerDBException;
+import cn.vfire.web.collector3.lang.FatchStopException;
+import cn.vfire.web.collector3.model.CrawlDatum;
+import cn.vfire.web.collector3.model.Links;
+import cn.vfire.web.collector3.model.Page;
+import cn.vfire.web.collector3.model.ResultData;
 
 /**
  * 页面访问数据抓取
@@ -30,160 +38,252 @@ public class Fetcher {
 	 * @author ChenGang
 	 *
 	 */
-	public class FetcherThread implements Runnable {
+	public class FetcherThread extends Thread {
 
 		private CountDownLatch countDownLatch;
 
-		private int serialNumber;
-
-		private String id;
-
-
-		public FetcherThread(int serialNumber) {
-			this.serialNumber = serialNumber;
-			this.id = String.format("%s-%d", name, serialNumber);
+		public FetcherThread() {
+			super(Fetcher.this.name);
 		}
 
-
-		public FetcherThread(int serialNumber, CountDownLatch countDownLatch) {
-			this.serialNumber = serialNumber;
-			this.id = String.format("%s-%d", name, serialNumber);
+		public FetcherThread(CountDownLatch countDownLatch) {
+			super(Fetcher.this.name);
 			this.countDownLatch = countDownLatch;
 		}
 
+		private void doWork() throws CrawlerDBException, FatchStopException {
 
-		private void doWork() {
-			// 事件触发
-			Fetcher.this.event.facherStart(this.serialNumber, Fetcher.this.taskPool);
+			CrawlDatum crawlDatum = null;
 
-			// 事件计数器
-			int exceptionCount = 0, exeCount = 0;
+			Page page = null;
 
-			boolean isException = false;
+			Generator generator = Fetcher.this.dbManager.getGenerator();
 
-			String exceptionMsg = null;
+			generator.open();
 
-			// 执行任务
-			if (Fetcher.this.executor != null) {
+			Fetcher.this.event.facherStart();// 事件触发
 
-				CrawlDatum crawlDatum = null;
+			while ((crawlDatum = generator.next()) != null) {
 
-				Page page = null;
+				Fetcher.this.event.facherBefore(crawlDatum);// 事件触发
 
-				Generator generator = Fetcher.this.taskPool.getGenerator();
+				try {
 
-				while (generator.hasNext()) {
-
-					crawlDatum = generator.next();
-
-					// 执行任务
-					{
-						isException = false;
-
-						try {
-
-							crawlDatum.incExeCountAndGet();
-
-							// 事件触发
-							Fetcher.this.event.facherBefore(crawlDatum, Fetcher.this.taskPool);
-
-							if (crawlDatum.isInvalid() == false) {
-								// 执行抓取动作
-								page = Fetcher.this.executor.execute(crawlDatum);
-
-								Fetcher.this.visitor.fetchResultData(page);
-
-								Fetcher.this.visitor.fetchCrawlDatum(page, Fetcher.this.taskPool);
-							}
-
-							// 事件触发
-							Fetcher.this.event.facherAfer(page, Fetcher.this.taskPool);
-
-						}
-						catch (Exception e) {
-
-							isException = true;
-
-							exceptionMsg = String.format("%s:%s", e.getClass().getName(), e.getMessage());
-
-							exceptionCount = exceptionCount + 1;
-
-							// 异常快照
-							Fetcher.this.exceptionNapshot();
-
-							// 事件触发
-							Fetcher.this.event.facherExceptin(crawlDatum, Fetcher.this.taskPool, e);
-
-						}
-						finally {
-
-							exeCount = exeCount + 1;
-
-							// 运行快照
-							Fetcher.this.runNapshot();
-
-							if (isException) {
-								log.warn("该爬虫触手{}完成第{}次抓取任务时发生异常，任务URL={} ExceptionMessage={}", this.id, exceptionCount,
-										crawlDatum.getUrl(), exceptionMsg);
-							}
-							else {
-								log.debug("该爬虫触手{}完成第{}次抓取任务，耗时{}毫秒，任务URL={}", this.id, exeCount,
-										page.getResponseTime(), crawlDatum.getUrl());
-							}
-						}
+					if (Fetcher.this.visitor.fetchCrawlDatum(crawlDatum) == false) {
+						continue;
 					}
+
+					page = Fetcher.this.executor.execute(crawlDatum);// 执行抓取动作
+
+					Fetcher.this.totalCount.incrementAndGet();// 计数器
+
+					Links links = Fetcher.this.visitor.fetchParseLinks(page, null);
+
+					Fetcher.this.visitor.fetchResultData(page, new LinkedList<ResultData>());
+
+					log.debug("爬虫保存提取到的新的Link任务。");
+
+					Fetcher.this.dbManager.wrtieParseSegment(links);
+
+					crawlDatum.setStatus(CrawlDatum.STATUS_DB_SUCCESS);
+
+				} catch (Exception e) {
+
+					log.debug("爬虫保存提取发生异常的任务。");
+
+					crawlDatum.setStatus(CrawlDatum.STATUS_DB_FAILED);
+
+					crawlDatum.incExpCountAndGet();
+
+					Fetcher.this.event.facherExceptin(crawlDatum, e);// 事件触发
+
+					Fetcher.this.exceptionNapshot();// 异常快照
+
+				} finally {
+
+					crawlDatum.incExeCountAndGet();
+
+					if (crawlDatum.getStatus() == CrawlDatum.STATUS_DB_SUCCESS || crawlDatum.isInvalid()) {
+						log.debug("爬虫删除爬取成功的任务。");
+						Fetcher.this.dbManager.deleteFetchSegment(crawlDatum);
+					} else {
+						log.debug("爬虫保存爬取失败的任务。");
+						Fetcher.this.dbManager.wrtieFetchSegment(crawlDatum);
+					}
+
+					Fetcher.this.event.facherAfer(page);// 事件触发
+
+					Fetcher.this.runNapshot();// 运行快照
+
 				}
 
 			}
-			else {
-				log.warn("该爬虫触手{}没有执行对象executor={}。", this.id, Fetcher.this.executor);
-			}
 
-			// 事件触发
-			Fetcher.this.event.facherEnd(this.serialNumber, exeCount, Fetcher.this.taskPool);
+			Fetcher.this.event.facherEnd();// 事件触发
+
+			generator.close();
 
 		}
-
 
 		@Override
 		public final void run() {
 
-			Fetcher.this.activeThreads.incrementAndGet();
+			if (Fetcher.this.stop.get()) {
+				return;
+			}
 
-			Thread.currentThread().setName(this.id);
-
-			this.doWork();
-
-			if (this.countDownLatch != null) {
-				this.countDownLatch.countDown();
+			try {
+				this.doWork();
+			} catch (CrawlerDBException e) {
+				log.warn("爬虫{}触手运行发生数据库读写异常。", Fetcher.this.name, e);
+				e.printStackTrace();
+			} catch (FatchStopException e) {
+				log.warn("爬虫{}触手运行中不满足条件停止。", Fetcher.this.name, e);
+				Fetcher.this.stop.set(true);
+			} finally {
+				if (this.countDownLatch != null) {
+					this.countDownLatch.countDown();
+				}
 			}
 
 		}
-
 	}
 
+	/**
+	 * 触手任务。
+	 * 
+	 * @author ChenGang
+	 *
+	 */
+	public class FetcherRunnable implements Runnable {
+
+		private CountDownLatch countDownLatch;
+
+		private CrawlDatum crawlDatum;
+
+		public FetcherRunnable(CrawlDatum crawlDatum) {
+			this.crawlDatum = crawlDatum;
+		}
+
+		public FetcherRunnable(CrawlDatum crawlDatum, CountDownLatch countDownLatch) {
+			this.crawlDatum = crawlDatum;
+			this.countDownLatch = countDownLatch;
+		}
+
+		private void doWork() throws CrawlerDBException, FatchStopException {
+
+			Page page = null;
+
+			Fetcher.this.event.facherStart();// 事件触发
+
+			Fetcher.this.event.facherBefore(this.crawlDatum);// 事件触发
+
+			if (Fetcher.this.visitor.fetchCrawlDatum(crawlDatum)) {
+
+				Exception tmpE = null;
+
+				try {
+
+					page = Fetcher.this.executor.execute(crawlDatum);// 执行抓取动作
+
+					crawlDatum.setStatus(CrawlDatum.STATUS_DB_SUCCESS);
+					
+					Fetcher.this.totalCount.incrementAndGet();
+
+					Links links = Fetcher.this.visitor.fetchParseLinks(page, null);
+
+					Fetcher.this.visitor.fetchResultData(page, new LinkedList<ResultData>());
+
+					log.debug("爬虫保存提取到的新的Link任务。");
+
+					Fetcher.this.dbManager.wrtieParseSegment(links);
+
+				} catch (Exception e) {
+
+					tmpE = e;
+
+					crawlDatum.setStatus(CrawlDatum.STATUS_DB_FAILED);
+
+					crawlDatum.incExpCountAndGet();
+
+					log.debug("爬虫保存提取发生异常的任务。");
+
+					Fetcher.this.event.facherExceptin(crawlDatum, tmpE);// 事件触发
+
+					Fetcher.this.exceptionNapshot();// 异常快照
+
+				} finally {
+
+					crawlDatum.incExeCountAndGet();
+
+					if (crawlDatum.getStatus() == CrawlDatum.STATUS_DB_SUCCESS || crawlDatum.isInvalid()) {
+						log.debug("爬虫删除爬取成功的任务。");
+						Fetcher.this.dbManager.deleteFetchSegment(crawlDatum);
+					} else {
+						log.debug("爬虫保存爬取失败的任务。");
+						Fetcher.this.dbManager.wrtieFetchSegment(crawlDatum);
+					}
+
+					Fetcher.this.event.facherAfer(page);// 事件触发
+
+					Fetcher.this.runNapshot();// 运行快照
+					
+				}
+				
+			}
+
+			Fetcher.this.event.facherEnd();// 事件触发
+
+		}
+
+		@Override
+		public final void run() {
+
+			if (Fetcher.this.stop.get()) {
+				return;
+			}
+
+			try {
+				this.doWork();
+			} catch (CrawlerDBException e) {
+				log.warn("爬虫{}触手运行发生数据库读写异常。", Fetcher.this.name, e);
+				e.printStackTrace();
+			} catch (FatchStopException e) {
+				log.warn("爬虫{}触手运行中不满足条件停止。", Fetcher.this.name, e);
+				Fetcher.this.stop.set(true);
+			} finally {
+				if (this.countDownLatch != null) {
+					this.countDownLatch.countDown();
+				}
+			}
+
+		}
+	}
 
 	@Setter
-	private Executor executor;
+	private Executor executor = new DefaultExecutor();
 
 	@Setter
-	private CrawlerVisitor visitor;
+	private DefaultCrawlerVisitor visitor = new DefaultCrawlerVisitor();
 
 	@Setter
 	private CrawlSnapshot snapshot;
 
 	@Setter
-	private CrawlerEvent event;
+	private CrawlerEvent event = new DefaultCrawlerEvent();
 
 	@Setter
-	private TaskPool taskPool;
+	@Getter
+	private DBManager dbManager;
 
 	@Getter
 	private String name;
 
-	/** 活动的线程 */
-	private AtomicInteger activeThreads = new AtomicInteger(0);
+	/** 执行次数 */
+	private AtomicInteger totalCount = new AtomicInteger(0);
 
+	/** 控制运行中 */
+	private AtomicBoolean stop = new AtomicBoolean(false);
 
 	/**
 	 * 爬虫触手构造器
@@ -195,7 +295,6 @@ public class Fetcher {
 		this.name = name;
 	}
 
-
 	/**
 	 * 爬虫触手构造器
 	 * 
@@ -204,16 +303,10 @@ public class Fetcher {
 	 * @param taskPool
 	 *            任务池
 	 */
-	public Fetcher(String name, TaskPool taskPool) {
+	public Fetcher(String name, DBManager dbManager) {
 		this.name = name;
-		this.taskPool = taskPool;
+		this.dbManager = dbManager;
 	}
-
-
-	public int getTotalCount() {
-		return this.taskPool.getTotalGenerate();
-	}
-
 
 	/**
 	 * 异常快照
@@ -224,16 +317,9 @@ public class Fetcher {
 		}
 	}
 
-
-	/**
-	 * 获取活动线程个数
-	 * 
-	 * @return
-	 */
-	public int getActiveThreads() {
-		return this.activeThreads.get();
+	public int getTotalCount() {
+		return this.totalCount.get();
 	}
-
 
 	/**
 	 * 运行时快照

@@ -38,7 +38,7 @@ public class FormatClass extends Element<FormatClass> {
 
 	@Override
 	public String[] attributes() {
-		return new String[] { "id", "classes" };
+		return new String[] { "id", "class" };
 	}
 
 	@Override

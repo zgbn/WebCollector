@@ -25,4 +25,10 @@ public class CrawlDatums implements Iterable<CrawlDatum> {
 		return this.dataList.addAll(crawlDatum);
 	}
 
+	public CrawlDatums(Links links) {
+		for (Link link : links) {
+			this.dataList.add(new CrawlDatum(link));
+		}
+	}
+
 }
