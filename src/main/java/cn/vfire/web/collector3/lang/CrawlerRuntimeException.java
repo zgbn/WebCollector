@@ -8,12 +8,12 @@ public class CrawlerRuntimeException extends RuntimeException {
 
 
 	public CrawlerRuntimeException(CrawlerExpInfo info) {
-		super(String.format("%s>%s", info.getCode(), info.getInfo()));
+		super(String.format("%s:%s", info.getCode(), info.getInfo()));
 	}
 
 
 	public CrawlerRuntimeException(CrawlerExpInfo info, Throwable t) {
-		super(String.format("%s>%s", info.getCode(), info.getInfo()), t);
+		super(String.format("%s:%s", info.getCode(), info.getInfo()), t);
 	}
 
 

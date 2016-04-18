@@ -1,18 +1,20 @@
 package cn.vfire.web.collector3.model;
 
-import java.util.Arrays;
+import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import cn.vfire.web.collector3.tools.crawler.element.NList;
 import cn.vfire.web.collector3.tools.crawler.element.NNode;
-import lombok.Getter;
-import lombok.Setter;
 
-public class RList extends LinkedList<RNode> {
+public class RList implements Iterator<RNode>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,12 +28,17 @@ public class RList extends LinkedList<RNode> {
 	@Setter
 	private Object value;
 
-
 	public RList parse(Page page, NList nlist) {
+
+		this.key = nlist.getKey();
 
 		if (nlist.isValue()) {
 			String[] arrayStr = nlist.getValue().split(",");
-			list.addAll(Arrays.asList(arrayStr));
+			for (String str : arrayStr) {
+				RNode strNode = new RNode();
+				strNode.setValue(str);
+				list.add(strNode);
+			}
 
 			this.setValue(this.list);
 			return this;
@@ -44,15 +51,13 @@ public class RList extends LinkedList<RNode> {
 				Element e = elements.get(i);
 				if (nlist.isAttr()) {
 					this.list.add(e.attr(nlist.getAttr()));
-				}
-				else {
+				} else {
 					this.list.add(e.text());
 				}
 			}
 			this.setValue(this.list);
 			return this;
-		}
-		else {
+		} else {
 
 			for (NNode _nnode : nlist.getNode()) {
 				RNode _rnode = new RNode().parse(page, _nnode);
@@ -63,6 +68,25 @@ public class RList extends LinkedList<RNode> {
 			return this;
 		}
 
+	}
+
+	@Override
+	public boolean hasNext() {
+		return this.list.iterator().hasNext();
+	}
+
+	@Override
+	public RNode next() {
+		Object val = this.list.iterator().next();
+		RNode node = new RNode();
+		node.setKey(this.key);
+		node.setValue(val);
+		return node;
+	}
+
+	@Override
+	public void remove() {
+		this.list.iterator().remove();
 	}
 
 }

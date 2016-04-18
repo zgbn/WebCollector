@@ -51,30 +51,15 @@ public class HttpRequest {
 
 	protected CrawlDatum crawlDatum = null;
 
-
-	public HttpRequest(String url) throws Exception {
-		this.crawlDatum = new CrawlDatum(url);
-		setUserAgent(Config.DEFAULT_USER_AGENT);
-	}
-
-
-	public HttpRequest(String url, Proxy proxy) throws Exception {
-		this(url);
-		this.proxy = proxy;
-	}
-
-
 	public HttpRequest(CrawlDatum crawlDatum) throws Exception {
 		this.crawlDatum = crawlDatum;
 		setUserAgent(Config.DEFAULT_USER_AGENT);
 	}
 
-
 	public HttpRequest(CrawlDatum crawlDatum, Proxy proxy) throws Exception {
 		this(crawlDatum);
 		this.proxy = proxy;
 	}
-
 
 	/**
 	 * 访问下载网页，网页内容存储到HttpResponse中。
@@ -94,8 +79,7 @@ public class HttpRequest {
 			for (int redirect = 0; redirect <= maxRedirect; redirect++) {
 				if (proxy == null) {
 					con = (HttpURLConnection) url.openConnection();
-				}
-				else {
+				} else {
 					con = (HttpURLConnection) url.openConnection(proxy);
 				}
 
@@ -175,17 +159,14 @@ public class HttpRequest {
 			bos.close();
 
 			return response;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw ex;
-		}
-		finally {
+		} finally {
 			if (is != null) {
 				is.close();
 			}
 		}
 	}
-
 
 	/**
 	 * 设置访问网页请求的相关配置。
@@ -216,26 +197,21 @@ public class HttpRequest {
 		}
 	}
 
-
 	public String getMethod() {
 		return method;
 	}
-
 
 	public void setMethod(String method) {
 		this.method = method;
 	}
 
-
 	public CrawlDatum getCrawlDatum() {
 		return crawlDatum;
 	}
 
-
 	public void setCrawlDatum(CrawlDatum crawlDatum) {
 		this.crawlDatum = crawlDatum;
 	}
-
 
 	static {
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -244,10 +220,8 @@ public class HttpRequest {
 				return null;
 			}
 
-
 			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
 			}
-
 
 			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
 			}
@@ -257,12 +231,10 @@ public class HttpRequest {
 			SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			LOG.info("Exception", ex);
 		}
 	}
-
 
 	private void initHeaderMap() {
 		if (headerMap == null) {
@@ -270,16 +242,13 @@ public class HttpRequest {
 		}
 	}
 
-
 	public void setUserAgent(String userAgent) {
 		setHeader("User-Agent", userAgent);
 	}
 
-
 	public void setCookie(String cookie) {
 		setHeader("Cookie", cookie);
 	}
-
 
 	public void addHeader(String key, String value) {
 		if (key == null) {
@@ -297,7 +266,6 @@ public class HttpRequest {
 		valueList.add(value);
 	}
 
-
 	public void removeHeader(String key) {
 		if (key == null) {
 			throw new NullPointerException("key is null");
@@ -307,7 +275,6 @@ public class HttpRequest {
 			headerMap.remove(key);
 		}
 	}
-
 
 	public void setHeader(String key, String value) {
 		if (key == null) {
@@ -322,31 +289,25 @@ public class HttpRequest {
 		headerMap.put(key, valueList);
 	}
 
-
 	public int getMAX_REDIRECT() {
 		return MAX_REDIRECT;
 	}
-
 
 	public void setMAX_REDIRECT(int MAX_REDIRECT) {
 		this.MAX_REDIRECT = MAX_REDIRECT;
 	}
 
-
 	public int getMAX_RECEIVE_SIZE() {
 		return MAX_RECEIVE_SIZE;
 	}
-
 
 	public void setMAX_RECEIVE_SIZE(int MAX_RECEIVE_SIZE) {
 		this.MAX_RECEIVE_SIZE = MAX_RECEIVE_SIZE;
 	}
 
-
 	public Map<String, List<String>> getHeaders() {
 		return headerMap;
 	}
-
 
 	public List<String> getHeader(String key) {
 		if (headerMap == null) {
@@ -355,7 +316,6 @@ public class HttpRequest {
 		return headerMap.get(key);
 	}
 
-
 	public String getFirstHeader(String key) {
 		if (headerMap == null) {
 			return null;
@@ -363,87 +323,70 @@ public class HttpRequest {
 		List<String> valueList = headerMap.get(key);
 		if (valueList.size() > 0) {
 			return valueList.get(0);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
-
 
 	public boolean isDoinput() {
 		return doinput;
 	}
 
-
 	public void setDoinput(boolean doinput) {
 		this.doinput = doinput;
 	}
-
 
 	public boolean isDooutput() {
 		return dooutput;
 	}
 
-
 	public void setDooutput(boolean dooutput) {
 		this.dooutput = dooutput;
 	}
-
 
 	public int getTimeoutForConnect() {
 		return timeoutForConnect;
 	}
 
-
 	public void setTimeoutForConnect(int timeoutForConnect) {
 		this.timeoutForConnect = timeoutForConnect;
 	}
-
 
 	public int getTimeoutForRead() {
 		return timeoutForRead;
 	}
 
-
 	public void setTimeoutForRead(int timeoutForRead) {
 		this.timeoutForRead = timeoutForRead;
 	}
-
 
 	public Proxy getProxy() {
 		return proxy;
 	}
 
-
 	public void setProxy(Proxy proxy) {
 		this.proxy = proxy;
 	}
-
 
 	public Map<String, List<String>> getHeaderMap() {
 		return headerMap;
 	}
 
-
 	public void setHeaderMap(Map<String, List<String>> headerMap) {
 		this.headerMap = headerMap;
 	}
-
 
 	public boolean isFollowRedirects() {
 		return followRedirects;
 	}
 
-
 	public void setFollowRedirects(boolean followRedirects) {
 		this.followRedirects = followRedirects;
 	}
 
-
 	public byte[] getOutputData() {
 		return outputData;
 	}
-
 
 	public void setOutputData(byte[] outputData) {
 		this.outputData = outputData;
